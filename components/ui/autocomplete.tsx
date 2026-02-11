@@ -48,8 +48,6 @@ function AutocompleteInput({
         data-slot="autocomplete-input"
         render={
           <Input
-            nativeInput
-            size={sizeValue}
             className="bg-transparent dark:bg-transparent border-0 shadow-none focus-visible:ring-0 focus-visible:border-0"
           />
         }

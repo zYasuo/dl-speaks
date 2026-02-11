@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useActionState } from "react";
+import { useEffect, useActionState, startTransition } from "react";
 import { useForm } from "react-hook-form";
 import { SearchIcon } from "lucide-react";
 import { SGetWords, TGetWords } from "../schema/get-words.schema";
@@ -16,8 +16,8 @@ import {
     AutocompletePopup,
 } from "@/components/ui/autocomplete";
 import { InputGroup, InputGroupAddon, InputGroupButton } from "@/components/ui/input-group";
-import { getWordsAction } from "@/app/actions/dictionary/get-words.actions";
-import { getRecentWordsAction } from "@/app/actions/dictionary/recents-words.actions";
+import { getWords } from "@/app/actions/dictionary/get-words.actions";
+import { getRecentWords } from "@/app/actions/dictionary/recents-words.actions";
 import { useDictionaryStore } from "@/lib/stores/dictionary.store";
 import { normalizeWords } from "@/app/utils/normalize-words.utils";
 
@@ -26,8 +26,8 @@ type TAutocompleteItem = { label: string; value: string };
 const FormGetWords = () => {
     const setResult = useDictionaryStore((s) => s.setResult);
 
-    const [recentState, loadRecentsAction] = useActionState(getRecentWordsAction, { items: [] });
-    const [getWordsState, getWordsFormAction] = useActionState(getWordsAction, null);
+    const [recentState, loadRecentsAction] = useActionState(getRecentWords, { items: [] });
+    const [getWordsState, getWordsFormAction] = useActionState(getWords, null);
 
     const form = useForm<TGetWords>({
         resolver: zodResolver(SGetWords),
@@ -40,7 +40,9 @@ const FormGetWords = () => {
     const word = form.watch("word");
 
     useEffect(() => {
-        loadRecentsAction();
+        startTransition(() => {
+            loadRecentsAction();
+        });
     }, [loadRecentsAction]);
 
     useEffect(() => {
@@ -58,7 +60,9 @@ const FormGetWords = () => {
         const formData = new FormData();
         formData.append("language", form_data.language);
         formData.append("word", form_data.word.trim());
-        getWordsFormAction(formData);
+        startTransition(() => {
+            getWordsFormAction(formData);
+        });
     };
 
     return (

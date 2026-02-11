@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState, useActionState } from "react";
+import { useEffect, useState, useActionState, startTransition } from "react";
 import { Badge } from "@/components/ui/badge";
-import { getRecentWordsAction } from "@/app/actions/dictionary/recents-words.actions";
-import { getWordsAction } from "@/app/actions/dictionary/get-words.actions";
+import { getRecentWords } from "@/app/actions/dictionary/recents-words.actions";
+import { getWords } from "@/app/actions/dictionary/get-words.actions";
 import { normalizeWords } from "@/app/utils/normalize-words.utils";
 import { useDictionaryStore } from "@/lib/stores/dictionary.store";
 import { toast } from "sonner";
@@ -16,11 +16,13 @@ const RecentWordsBadge = () => {
     const setResult = useDictionaryStore((s) => s.setResult);
     const [loadingWord, setLoadingWord] = useState<string | null>(null);
 
-    const [recentState, loadRecentsAction] = useActionState(getRecentWordsAction, { items: [] });
-    const [getWordsState, getWordsFormAction] = useActionState(getWordsAction, null);
+    const [recentState, loadRecentsAction] = useActionState(getRecentWords, { items: [] });
+    const [getWordsState, getWordsFormAction] = useActionState(getWords, null);
 
     useEffect(() => {
-        loadRecentsAction();
+        startTransition(() => {
+            loadRecentsAction();
+        });
     }, [loadRecentsAction]);
 
     useEffect(() => {
@@ -40,7 +42,9 @@ const RecentWordsBadge = () => {
         const formData = new FormData();
         formData.append("language", LANGUAGE.en);
         formData.append("word", word);
-        getWordsFormAction(formData);
+        startTransition(() => {
+            getWordsFormAction(formData);
+        });
     };
 
     const words = recentState.items.map((item) => item.label);

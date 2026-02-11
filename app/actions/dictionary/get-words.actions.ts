@@ -5,16 +5,12 @@ import { getApiRequestInit } from "@/app/config/api/api-client";
 import type { IActionResponse } from "@/app/types/api/api.types";
 import type { IWords } from "@/app/types/dictionary/wors.types";
 
-export type GetWordsState = IActionResponse<IWords> | null;
+export type TGetWordsState = IActionResponse<IWords> | null;
 
-export async function getWordsAction(
-    _prevState: GetWordsState,
+export async function getWords(
+    _prevState: TGetWordsState,
     formData: FormData
-): Promise<GetWordsState> {
-    return getWords(formData);
-}
-
-export async function getWords(formData: FormData): Promise<IActionResponse<IWords>> {
+): Promise<TGetWordsState> {
     try {
         const language = String(formData.get("language") ?? "en");
         const word = String(formData.get("word") ?? "");
@@ -25,7 +21,6 @@ export async function getWords(formData: FormData): Promise<IActionResponse<IWor
 
         const response = await fetch(url, init);
         const data: IWords = await response.json();
-        console.log(data);
         if (!response.ok) {
             return {
                 success: false,
