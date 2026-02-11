@@ -1,5 +1,7 @@
 # DL Speaks
 
+**Repo:** [github.com/zYasuo/dl-speaks](https://github.com/zYasuo/dl-speaks)
+
 Personal project I built to study English at home. The idea is having a dictionary at hand: look up a word, see definitions, phonetic transcription, pronunciation audio, examples and synonyms — and keep the ones I've looked up recently so I can review them.
 
 ## What's in here
@@ -37,4 +39,4 @@ BACKEND_URL=https://your-api.com
 
 ---
 
-Built for my own use; feel free to clone and adapt if you want.
+Built for my own use; feel free to [clone and adapt](https://github.com/zYasuo/dl-speaks) if you want.
