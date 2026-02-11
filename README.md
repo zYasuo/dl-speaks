@@ -1,40 +1,40 @@
 # DL Speaks
 
-Projeto pessoal que eu fiz pra estudar inglês em casa. A ideia é ter um dicionário à mão: buscar palavra, ver definição, transcrição fonética, áudio da pronúncia, exemplos e sinônimos — e ir guardando as que busquei recentemente pra revisar.
+Personal project I built to study English at home. The idea is having a dictionary at hand: look up a word, see definitions, phonetic transcription, pronunciation audio, examples and synonyms — and keep the ones I've looked up recently so I can review them.
 
-## O que tem aqui
+## What's in here
 
-- **Login** — entra com email/senha (backend separado).
-- **Dashboard** — Home (perfil) e **Dictionary**.
-- **Dictionary / Words** — campo de busca com sugestões das palavras recentes. Busco a palavra, a API devolve definições, part of speech, exemplos, áudio (quando tem) e dá pra adicionar aos favoritos.
-- **Palavras recentes** — badges clicáveis com as últimas palavras buscadas; clico de novo e já carrega o resultado.
+- **Login** — sign in with email/password (separate backend).
+- **Dashboard** — Home (profile) and **Dictionary**.
+- **Dictionary / Words** — search field with suggestions from recent words. I search for a word, the API returns definitions, part of speech, examples, audio (when available) and lets me add to favorites.
+- **Recent words** — clickable badges with the last words I searched; click again and it loads the result.
 
-Stack: Next.js 16 (App Router), React 19, TypeScript, Tailwind, Zustand, formulários com react-hook-form + zod, UI com componentes no estilo shadcn.
+Stack: Next.js 16 (App Router), React 19, TypeScript, Tailwind, Zustand, forms with react-hook-form + zod, UI with shadcn-style components.
 
-## Rodar em desenvolvimento
+## Run in development
 
 ```bash
 npm install
 npm run dev
 ```
 
-Abre [http://localhost:3000](http://localhost:3000). O front chama um backend em outra URL; precisa configurar a variável de ambiente:
+Open [http://localhost:3000](http://localhost:3000). The frontend calls a backend at another URL; you need to set the env variable:
 
 ```env
-BACKEND_URL=https://sua-api.com
+BACKEND_URL=https://your-api.com
 ```
 
-(ou a base URL do seu backend)
+(or whatever your backend base URL is)
 
 ## Scripts
 
-| Comando     | Descrição              |
-|------------|------------------------|
-| `npm run dev`   | Servidor de desenvolvimento |
-| `npm run build` | Build de produção           |
-| `npm run start` | Roda o build (produção)     |
-| `npm run lint`  | ESLint                      |
+| Command        | Description        |
+|----------------|--------------------|
+| `npm run dev`  | Dev server         |
+| `npm run build`| Production build   |
+| `npm run start`| Run production build |
+| `npm run lint` | ESLint             |
 
 ---
 
-Feito pra uso próprio; se quiser clonar e adaptar, fique à vontade.
+Built for my own use; feel free to clone and adapt if you want.

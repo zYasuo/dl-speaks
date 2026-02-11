@@ -50,11 +50,12 @@ const FormGetWords = () => {
         if (getWordsState.success) {
             toast.success(getWordsState.message);
             setResult(normalizeWords(getWordsState.data));
+            startTransition(() => loadRecentsAction());
         } else {
             toast.error(getWordsState.error);
             setResult(null);
         }
-    }, [getWordsState, setResult]);
+    }, [getWordsState, setResult, loadRecentsAction]);
 
     const onSubmit = (form_data: TGetWords) => {
         const formData = new FormData();
