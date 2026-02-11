@@ -3,6 +3,12 @@ import { P } from "@/components/ui/p";
 import FormGetWords from "./components/form-get-words";
 import RecentWordsBadge from "./components/recent-words-badge";
 import WordResultSlot from "./components/word-result-slot";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Dictionary",
+    description: "Dictionary",
+};
 
 export default function Page() {
     return (
