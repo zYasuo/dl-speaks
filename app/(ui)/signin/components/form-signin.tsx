@@ -59,7 +59,7 @@ const FormSignin = () => {
     };
 
     return (
-        <Card className="w-full bg-background ring-0">
+        <Card className="w-full bg-muted ring-0">
             <CardHeader>
                 <CardTitle>Sign in</CardTitle>
                 <CardDescription>Sign in to your account</CardDescription>
