@@ -1,36 +1,40 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# DL Speaks
 
-## Getting Started
+Projeto pessoal que eu fiz pra estudar inglês em casa. A ideia é ter um dicionário à mão: buscar palavra, ver definição, transcrição fonética, áudio da pronúncia, exemplos e sinônimos — e ir guardando as que busquei recentemente pra revisar.
 
-First, run the development server:
+## O que tem aqui
+
+- **Login** — entra com email/senha (backend separado).
+- **Dashboard** — Home (perfil) e **Dictionary**.
+- **Dictionary / Words** — campo de busca com sugestões das palavras recentes. Busco a palavra, a API devolve definições, part of speech, exemplos, áudio (quando tem) e dá pra adicionar aos favoritos.
+- **Palavras recentes** — badges clicáveis com as últimas palavras buscadas; clico de novo e já carrega o resultado.
+
+Stack: Next.js 16 (App Router), React 19, TypeScript, Tailwind, Zustand, formulários com react-hook-form + zod, UI com componentes no estilo shadcn.
+
+## Rodar em desenvolvimento
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abre [http://localhost:3000](http://localhost:3000). O front chama um backend em outra URL; precisa configurar a variável de ambiente:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```env
+BACKEND_URL=https://sua-api.com
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+(ou a base URL do seu backend)
 
-## Learn More
+## Scripts
 
-To learn more about Next.js, take a look at the following resources:
+| Comando     | Descrição              |
+|------------|------------------------|
+| `npm run dev`   | Servidor de desenvolvimento |
+| `npm run build` | Build de produção           |
+| `npm run start` | Roda o build (produção)     |
+| `npm run lint`  | ESLint                      |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Feito pra uso próprio; se quiser clonar e adaptar, fique à vontade.
