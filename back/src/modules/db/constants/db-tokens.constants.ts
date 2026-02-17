@@ -1,0 +1,3 @@
+export const DATABASE_MODULE_TOKENS = {
+    DATABASE_SERVICE: "DATABASE_SERVICE"
+} as const;

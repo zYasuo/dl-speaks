@@ -1,0 +1,105 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  uuid       String   @unique @default(uuid())
+  email      String   @unique
+  password   String
+  role       Role     @default(USER)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  favorite_words Favorite_Word[]
+  history_words History_Word[]
+}
+
+model Word {
+  id         Int      @id @default(autoincrement())
+  uuid       String   @unique @default(uuid())
+  word       String
+  phonetic   String?
+  origin     String?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  phonetics Phonetic[]
+  meanings  Meaning[]
+  favorite_words Favorite_Word[]
+  history_words History_Word[]
+}
+
+model Phonetic {
+  id     Int     @id @default(autoincrement())
+  text   String
+  audio  String?
+  word_id Int
+  word   Word    @relation(fields: [word_id], references: [id], onDelete: Cascade)
+}
+
+model Meaning {
+  id           Int    @id @default(autoincrement())
+  partOfSpeech String
+  word_id       Int
+  word         Word   @relation(fields: [word_id], references: [id], onDelete: Cascade)
+
+  definitions Definition[]
+}
+
+model Definition {
+  id         Int     @id @default(autoincrement())
+  definition String
+  example    String?
+  meaning_id  Int
+  meaning    Meaning @relation(fields: [meaning_id], references: [id], onDelete: Cascade)
+
+  synonyms Synonym[]
+  antonyms Antonym[]
+}
+
+model Synonym {
+  id           Int        @id @default(autoincrement())
+  value        String
+  definition_id Int
+  definition   Definition @relation(fields: [definition_id], references: [id], onDelete: Cascade)
+}
+
+model Antonym {
+  id           Int        @id @default(autoincrement())
+  value        String
+  definition_id Int
+  definition   Definition @relation(fields: [definition_id], references: [id], onDelete: Cascade)
+}
+
+model Favorite_Word {
+  id         Int      @id @default(autoincrement())
+  user_id     Int
+  word_id     Int
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  word       Word     @relation(fields: [word_id], references: [id], onDelete: Cascade)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model History_Word {
+  id         Int      @id @default(autoincrement())
+  user_id     Int
+  word_id     Int
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  word       Word     @relation(fields: [word_id], references: [id], onDelete: Cascade)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+enum Role {
+  ADMIN
+  USER
+}

@@ -1,0 +1,38 @@
+# Dependencies
+node_modules
+npm-debug.log*
+yarn.lock
+pnpm-lock.yaml
+
+# Build output
+dist
+build
+.next
+out
+
+# Git
+.git
+.gitignore
+
+# IDE e ambiente local
+.env
+.env.*
+!.env.example
+.vscode
+.idea
+*.log
+
+# Testes e cobertura
+coverage
+.nyc_output
+*.spec.ts
+test
+jest-e2e.json
+
+# Documentação e outros
+README.md
+*.md
+.DS_Store
+
+# Prisma generated (será gerado no build)
+generated
