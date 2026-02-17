@@ -4,18 +4,17 @@ import { cookies } from "next/headers";
 import { API_ROUTES, AUTH_TOKEN_COOKIE_NAME } from "@/app/config/api/api-config";
 import { getApiRequestInit } from "@/app/config/api/api-client";
 import type { IActionResponse } from "@/app/types/api/api.types";
-import type { IAuthSignin } from "@/app/types/auth/auth.types";
-import type { IUser } from "@/app/types/user/user.types";
+import type { TSigninResponse } from "@shared/schemas/auth/signin.schema";
+import type { TUserPublic } from "@shared/schemas/user/user.schema";
 
-const emptyUser: IUser = {
+const emptyUser: TUserPublic = {
     uuid: "",
     email: "",
-    created_at: "",
-    updated_at: "",
-    role: "",
+    role: "USER",
+    created_at: new Date(0),
 };
 
-export async function signin(formData: FormData): Promise<IActionResponse<IAuthSignin>> {
+export async function signin(formData: FormData): Promise<IActionResponse<TSigninResponse>> {
     try {
         const email = formData.get("email");
         const password = formData.get("password");
@@ -32,12 +31,12 @@ export async function signin(formData: FormData): Promise<IActionResponse<IAuthS
             return {
                 success: false,
                 message: "Sign in failed",
-                data: { user: emptyUser },
+                data: { user: emptyUser, access_token: "", token_type: "Bearer" },
                 error: message,
             };
         }
 
-        const payload: IAuthSignin = await response.json();
+        const payload: TSigninResponse = await response.json();
 
         if (payload.access_token) {
             const cookieStore = await cookies();
@@ -63,7 +62,7 @@ export async function signin(formData: FormData): Promise<IActionResponse<IAuthS
         return {
             success: false,
             message: "Sign in failed",
-            data: { user: emptyUser },
+            data: { user: emptyUser, access_token: "", token_type: "Bearer" },
             error: error instanceof Error ? error.message : "Unknown error",
         };
     }

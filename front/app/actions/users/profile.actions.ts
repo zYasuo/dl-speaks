@@ -5,18 +5,17 @@ import { API_ROUTES } from "@/app/config/api/api-config";
 import { AUTH_TOKEN_COOKIE_NAME } from "@/app/config/api/api-config";
 import { getApiRequestInit } from "@/app/config/api/api-client";
 import type { IActionResponse } from "@/app/types/api/api.types";
-import { IUser } from "@/app/types/user/user.types";
-import type { TAuthProfile } from "@/app/types/auth/auth.types";
+import type { TUser } from "@shared/schemas/user/user.schema";
 
-const emptyProfile: IUser = {
+const emptyProfile: TUser = {
     uuid: "",
     email: "",
-    created_at: "",
-    updated_at: "",
-    role: "",
+    role: "USER",
+    created_at: new Date(0),
+    updated_at: new Date(0),
 };
 
-export async function profile(): Promise<IActionResponse<TAuthProfile>> {
+export async function profile(): Promise<IActionResponse<TUser>> {
     const cookieStore = await cookies();
     const token = cookieStore.get(AUTH_TOKEN_COOKIE_NAME)?.value ?? null;
 
@@ -33,7 +32,7 @@ export async function profile(): Promise<IActionResponse<TAuthProfile>> {
         };
     }
 
-    const data: TAuthProfile = await response.json();
+    const data: TUser = await response.json();
     return {
         success: true,
         message: "Profile successful",

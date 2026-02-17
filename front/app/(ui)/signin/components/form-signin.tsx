@@ -3,7 +3,7 @@ import * as React from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
-import { SFormSignin, TFormSignin } from "../schemas/form-signin.schema";
+import { SSignin, TSignin } from "@shared/schemas/auth/signin.schema";
 import { useRouter } from "next/navigation";
 
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
@@ -20,15 +20,15 @@ const FormSignin = () => {
     const [showPassword, setShowPassword] = React.useState(false);
     const router = useRouter();
 
-    const form = useForm<TFormSignin>({
-        resolver: zodResolver(SFormSignin),
+    const form = useForm<TSignin>({
+        resolver: zodResolver(SSignin),
         defaultValues: {
             email: "",
             password: ""
         }
     });
 
-    const onSubmit = async (form_data: TFormSignin) => {
+    const onSubmit = async (form_data: TSignin) => {
         startSigningIn(async () => {
             const formData = new FormData();
 

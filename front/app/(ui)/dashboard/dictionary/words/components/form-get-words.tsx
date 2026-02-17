@@ -3,7 +3,7 @@
 import { useEffect, useActionState, startTransition } from "react";
 import { useForm } from "react-hook-form";
 import { SearchIcon } from "lucide-react";
-import { SGetWords, TGetWords } from "../schema/get-words.schema";
+import { SGetWords, TGetWords } from "@shared/schemas/dictionary/get-words.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 
