@@ -18,3 +18,10 @@ export const SUserPublic = SUser.pick({
 });
 
 export type TUserPublic = z.infer<typeof SUserPublic>;
+
+export const SUserUpdate = z.object({
+  email: z.email().optional(),
+  role: z.enum(["USER", "ADMIN"]).optional(),
+});
+
+export type TUserUpdate = z.infer<typeof SUserUpdate>;

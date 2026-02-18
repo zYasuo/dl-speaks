@@ -4,8 +4,8 @@ import { DATABASE_MODULE_TOKENS } from "../../db/constants/db-tokens.constants";
 import type { IDatabaseService } from "src/modules/db/services/interfaces/database-config-service.interface";
 import { USER_ERRORS } from "src/commons/constants/errors/user-errors.constants";
 import { IUserService } from "./interfaces/user-service.interface";
-import { UpdateUserDTO } from "src/commons/DTO/users.dto";
-import type { TUser } from "@shared/schemas/user/user.schema";
+import type { TSignup } from "@shared/schemas/auth/signup.schema";
+import type { TUser, TUserUpdate } from "@shared/schemas/user/user.schema";
 
 @Injectable()
 export class UserService implements IUserService {
@@ -28,7 +28,7 @@ export class UserService implements IUserService {
         await this.prisma.user.delete({ where: { uuid } });
     }
 
-    async updateUser(uuid: string, data: UpdateUserDTO): Promise<User> {
+    async updateUser(uuid: string, data: TUserUpdate): Promise<User> {
         await this.getUserByUuid(uuid);
         return this.prisma.user.update({ where: { uuid }, data });
     }
@@ -60,8 +60,8 @@ export class UserService implements IUserService {
             uuid: user.uuid,
             email: user.email,
             role: user.role,
-            created_at: user.created_at.toISOString(),
-            updated_at: user.updated_at.toISOString(),
+            created_at: user.created_at,
+            updated_at: user.updated_at,
         };
     }
 }
