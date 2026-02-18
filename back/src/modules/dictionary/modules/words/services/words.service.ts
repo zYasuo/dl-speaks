@@ -1,5 +1,6 @@
 import { BadRequestException, Inject, Injectable } from "@nestjs/common";
 import { PrismaClient, Word } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { DATABASE_MODULE_TOKENS } from "src/modules/db/constants/db-tokens.constants";
 import type { IDatabaseService } from "src/modules/db/services/interfaces/database-config-service.interface";
 import type { TWordEntry } from "@shared/schemas/dictionary/words.schema";
@@ -21,61 +22,79 @@ export class WordsService implements IWordService {
     }
 
     async findByWord(word: string): Promise<Word | null> {
-        const cached = await this.cache.get(word);
+        const normalized = word.toLowerCase().trim();
+        const cacheKey = `word:${normalized}`;
+        const cached = await this.cache.get(cacheKey);
         if (cached) {
             return JSON.parse(cached) as Word;
         }
-
         const result = await this.prisma.word.findFirst({
-            where: { word: word.toLowerCase().trim() },
-            include: { phonetics: true, meanings: { include: { definitions: { include: { synonyms: true, antonyms: true } } } } }
+            where: { word: normalized },
+            include: {
+                phonetics: true,
+                meanings: {
+                    include: {
+                        definitions: {
+                            include: { synonyms: true, antonyms: true }
+                        }
+                    }
+                }
+            }
         });
         if (result) {
-            await this.cache.set(`word:${word}`, JSON.stringify(result), 60 * 60 * 24);
+            await this.cache.set(cacheKey, JSON.stringify(result), 60 * 60 * 24);
         }
         return result;
     }
 
     async createFromApiEntry(entry: TWordEntry): Promise<Word> {
         const word = entry.word.toLowerCase().trim();
-        return this.prisma.word.create({
-            data: {
-                word,
-                phonetic: entry.phonetic ?? null,
-                origin: entry.origin ?? null,
-                phonetics: entry.phonetics?.length
-                    ? {
-                          create: entry.phonetics
-                              .filter((p) => p.text != null && p.text !== "")
-                              .map((p) => ({
-                                  text: p.text!,
-                                  audio: p.audio ?? null
+        try {
+            return await this.prisma.word.create({
+                data: {
+                    word,
+                    phonetic: entry.phonetic ?? null,
+                    origin: entry.origin ?? null,
+                    phonetics: entry.phonetics?.length
+                        ? {
+                              create: entry.phonetics
+                                  .filter((p) => p.text != null && p.text !== "")
+                                  .map((p) => ({
+                                      text: p.text!,
+                                      audio: p.audio ?? null
+                                  }))
+                          }
+                        : undefined,
+                    meanings: entry.meanings?.length
+                        ? {
+                              create: entry.meanings.map((m) => ({
+                                  partOfSpeech: m.partOfSpeech,
+                                  definitions: m.definitions?.length
+                                      ? {
+                                            create: m.definitions.map((d) => ({
+                                                definition: d.definition,
+                                                example: d.example ?? null,
+                                                synonyms: d.synonyms?.length ? { create: d.synonyms.map((value) => ({ value })) } : undefined,
+                                                antonyms: d.antonyms?.length ? { create: d.antonyms.map((value) => ({ value })) } : undefined
+                                            }))
+                                        }
+                                      : undefined
                               }))
-                      }
-                    : undefined,
-                meanings: entry.meanings?.length
-                    ? {
-                          create: entry.meanings.map((m) => ({
-                              partOfSpeech: m.partOfSpeech,
-                              definitions: m.definitions?.length
-                                  ? {
-                                        create: m.definitions.map((d) => ({
-                                            definition: d.definition,
-                                            example: d.example ?? null,
-                                            synonyms: d.synonyms?.length ? { create: d.synonyms.map((value) => ({ value })) } : undefined,
-                                            antonyms: d.antonyms?.length ? { create: d.antonyms.map((value) => ({ value })) } : undefined
-                                        }))
-                                    }
-                                  : undefined
-                          }))
-                      }
-                    : undefined
-            },
-            include: {
-                phonetics: true,
-                meanings: { include: { definitions: { include: { synonyms: true, antonyms: true } } } }
+                          }
+                        : undefined
+                },
+                include: {
+                    phonetics: true,
+                    meanings: { include: { definitions: { include: { synonyms: true, antonyms: true } } } }
+                }
+            });
+        } catch (e) {
+            if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
+                const existing = await this.findByWord(word);
+                if (existing) return existing;
             }
-        });
+            throw e;
+        }
     }
 
     async recentWords(): Promise<string[]> {
@@ -101,23 +120,15 @@ export class WordsService implements IWordService {
 
     async addToFavorite(data: { wordId: number; userId: number }): Promise<void> {
         const { wordId, userId } = data;
-
-        if (await this.isWordAlreadyInFavorite(wordId, userId)) {
-            throw new BadRequestException(WORDS_ERRORS.WORD_ALREADY_IN_FAVORITE);
-        }
-
-        await this.prisma.favorite_Word.create({
-            data: {
-                word_id: wordId,
-                user_id: userId
+        try {
+            await this.prisma.favorite_Word.create({
+                data: { word_id: wordId, user_id: userId }
+            });
+        } catch (e) {
+            if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
+                throw new BadRequestException(WORDS_ERRORS.WORD_ALREADY_IN_FAVORITE);
             }
-        });
-    }
-
-    private async isWordAlreadyInFavorite(wordId: number, userId: number): Promise<boolean> {
-        const result = await this.prisma.favorite_Word.findFirst({
-            where: { word_id: wordId, user_id: userId }
-        });
-        return result !== null;
+            throw e;
+        }
     }
 }
