@@ -4,6 +4,7 @@ import { DatabaseModule } from "../../db/database.module";
 import { AuthModule } from "../../auth/auth.module";
 import { DictionaryModule } from "../../dictionary/dictionary.module";
 import { RedisModule } from "../../redis/redis.module";
+import { DailyGoalModule } from "../../daily-goal/daily-goal.module";
 import redisConfig from "../../../config/redis/redis.config";
 
 @Module({
@@ -16,6 +17,7 @@ import redisConfig from "../../../config/redis/redis.config";
         RedisModule,
         AuthModule,
         DictionaryModule,
+        DailyGoalModule,
     ],
     controllers: [],
     providers: [],

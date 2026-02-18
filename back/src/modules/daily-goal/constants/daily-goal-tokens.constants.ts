@@ -1,0 +1,3 @@
+export const DAILY_GOAL_MODULE_TOKENS = {
+    DAILY_GOAL_SERVICE: "DAILY_GOAL_SERVICE",
+} as const;
