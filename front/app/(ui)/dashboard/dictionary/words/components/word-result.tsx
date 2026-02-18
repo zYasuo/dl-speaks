@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import { Volume2, Quote } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import type { IWordEntry, IMeaning, IDefinition } from "@/app/types/dictionary/wors.types";
+import type { TWordEntry, TMeaning, TDefinition } from "@shared/schemas/dictionary/words.schema";
 import { cn } from "@/lib/utils";
 
 function getAudioUrl(audio?: string): string | null {
@@ -12,7 +12,7 @@ function getAudioUrl(audio?: string): string | null {
     return audio.startsWith("//") ? `https:${audio}` : audio;
 }
 
-function DefinitionItem({ definition, index }: { definition: IDefinition; index: number }) {
+function DefinitionItem({ definition, index }: { definition: TDefinition; index: number }) {
     return (
         <li className="relative pl-5 pb-4 last:pb-0 min-w-0">
             <span className="absolute left-0 top-0.5 size-2 rounded-full bg-primary/60 shrink-0" aria-hidden />
@@ -33,7 +33,7 @@ function DefinitionItem({ definition, index }: { definition: IDefinition; index:
     );
 }
 
-function MeaningBlock({ meaning }: { meaning: IMeaning }) {
+function MeaningBlock({ meaning }: { meaning: TMeaning }) {
     return (
         <section className="space-y-3 min-w-0">
             <Badge
@@ -51,7 +51,7 @@ function MeaningBlock({ meaning }: { meaning: IMeaning }) {
     );
 }
 
-export default function WordResult({ entry }: { entry: IWordEntry }) {
+export default function WordResult({ entry }: { entry: TWordEntry }) {
     const audioRef = useRef<HTMLAudioElement>(null);
     const [playing, setPlaying] = useState(false);
 

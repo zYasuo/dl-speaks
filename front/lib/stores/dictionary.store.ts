@@ -1,9 +1,9 @@
 import { create } from "zustand";
-import type { IWordEntry } from "@/app/types/dictionary/wors.types";
+import type { TWordEntry } from "@shared/schemas/dictionary/words.schema";
 
 interface DictionaryStore {
-    result: IWordEntry | null;
-    setResult: (entry: IWordEntry | null) => void;
+    result: TWordEntry | null;
+    setResult: (entry: TWordEntry | null) => void;
 }
 
 export const useDictionaryStore = create<DictionaryStore>((set) => ({

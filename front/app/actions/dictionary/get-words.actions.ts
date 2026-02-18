@@ -3,9 +3,9 @@
 import { API_ROUTES } from "@/app/config/api/api-config";
 import { getApiRequestInit } from "@/app/config/api/api-client";
 import type { IActionResponse } from "@/app/types/api/api.types";
-import type { IWords } from "@/app/types/dictionary/wors.types";
+import type { TWords } from "@shared/schemas/dictionary/words.schema";
 
-export type TGetWordsState = IActionResponse<IWords> | null;
+export type TGetWordsState = IActionResponse<TWords> | null;
 
 export async function getWords(
     _prevState: TGetWordsState,
@@ -20,13 +20,13 @@ export async function getWords(
         });
 
         const response = await fetch(url, init);
-        const data: IWords = await response.json();
+        const data: TWords = await response.json();
         if (!response.ok) {
             return {
                 success: false,
                 message: "Error getting words",
                 error: "Error getting words",
-                data: {} as IWords
+                data: {} as TWords
             };
         }
         return {
@@ -41,7 +41,7 @@ export async function getWords(
             success: false,
             message: "Error getting words",
             error: errorMessage,
-            data: {} as IWords
+            data: {} as TWords
         };
     }
 }

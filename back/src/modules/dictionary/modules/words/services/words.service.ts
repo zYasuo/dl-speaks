@@ -2,7 +2,7 @@ import { BadRequestException, Inject, Injectable } from "@nestjs/common";
 import { PrismaClient, Word } from "@prisma/client";
 import { DATABASE_MODULE_TOKENS } from "src/modules/db/constants/db-tokens.constants";
 import type { IDatabaseService } from "src/modules/db/services/interfaces/database-config-service.interface";
-import type { DictionaryEntry } from "../../../client/client.api";
+import type { TWordEntry } from "@shared/schemas/dictionary/words.schema";
 import { REDIS_MODULE_TOKENS } from "src/modules/redis/constants/redis-tokens.constants";
 import type { ICacheService } from "src/modules/redis/services/interfaces/cache-service.interface";
 import type { IWordService } from "./interfaces/words-service.interface";
@@ -36,7 +36,7 @@ export class WordsService implements IWordService {
         return result;
     }
 
-    async createFromApiEntry(entry: DictionaryEntry): Promise<Word> {
+    async createFromApiEntry(entry: TWordEntry): Promise<Word> {
         const word = entry.word.toLowerCase().trim();
         return this.prisma.word.create({
             data: {

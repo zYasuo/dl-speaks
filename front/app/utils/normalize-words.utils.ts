@@ -1,7 +1,6 @@
-import type { IWordEntry, IWords } from "@/app/types/dictionary/wors.types";
+import type { TWordEntry, TWords } from "@shared/schemas/dictionary/words.schema";
 
-
-export function normalizeWords(data: IWords): IWordEntry | null {
+export function normalizeWords(data: TWords): TWordEntry | null {
     if (Array.isArray(data)) return data[0] ?? null;
-    return (data as IWordEntry)?.word ? (data as IWordEntry) : null;
+    return (data as TWordEntry)?.word ? (data as TWordEntry) : null;
 }
