@@ -1,7 +1,12 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  transpilePackages: ["shared"],
+  webpack: (config) => {
+    config.resolve ??= {};
+    config.resolve.symlinks = true;
+    return config;
+  },
 };
 
 export default nextConfig;
