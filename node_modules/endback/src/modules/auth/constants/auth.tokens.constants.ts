@@ -1,0 +1,4 @@
+export const AUTH_MODULE_TOKENS = {
+    AUTH_SERVICE: "AUTH_SERVICE",
+    JWT_SERVICE: "JWT_SERVICE"
+} as const;

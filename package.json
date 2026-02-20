@@ -1,0 +1,15 @@
+{
+  "name": "dl-speaks-monorepo",
+  "private": true,
+  "workspaces": [
+    "back",
+    "front",
+    "shared"
+  ],
+  "scripts": {
+    "build": "npm run build --workspace=shared && npm run build --workspace=back && npm run build --workspace=front",
+    "build:shared": "npm run build --workspace=shared",
+    "build:back": "npm run build --workspace=back",
+    "build:front": "npm run build --workspace=front"
+  }
+}
