@@ -1,4 +1,6 @@
-# DL Speaks
+# DL Speaks (front)
+
+Part of the **dl-speaks** monorepo. For installation and how to run front and backend together, see the **[root README](../README.md)**.
 
 **Repo:** [github.com/zYasuo/dl-speaks](https://github.com/zYasuo/dl-speaks)
 
@@ -15,8 +17,9 @@ Stack: Next.js 16 (App Router), React 19, TypeScript, Tailwind, Zustand, forms w
 
 ## Run in development
 
+In the monorepo, run `npm install` at the root first; then here:
+
 ```bash
-npm install
 npm run dev
 ```
 

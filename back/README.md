@@ -1,8 +1,10 @@
-# endback
+# Backend
+
+Part of the **dl-speaks** monorepo. For installation and how to run backend and front together, see the **[root README](../README.md)**.
 
 **Repo:** [github.com/zYasuo/endback](https://github.com/zYasuo/endback) · branch `dl-speaks`: [endback/tree/dl-speaks](https://github.com/zYasuo/endback/tree/dl-speaks)
 
-Backend set up as a **hub**: one API that will host and serve multiple projects. Right now only **DL-speaks** is connected (the dictionary front for studying English). The plan is to plug in more apps over time.
+This backend is set up as a **hub**: one API that will host and serve multiple projects. Right now only **DL-speaks** is connected (the dictionary front for studying English). The plan is to plug in more apps over time.
 
 ## What's in here
 
@@ -43,10 +45,9 @@ Stack: NestJS 11, Prisma (PostgreSQL), Redis (cache), JWT, class-validator/class
    npx prisma migrate dev
    ```
 
-4. **Start the API**:
+4. **Start the API** (in the monorepo, run `npm install` at root first; then here):
 
    ```bash
-   npm install
    npm run start:dev
    ```
 
