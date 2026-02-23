@@ -10,12 +10,15 @@ import { UserRepository } from "./adapters/outbound/user.repository";
     imports: [DatabaseModule, JwtAuthModule],
     controllers: [UserController],
     providers: [
-        CreateUserUseCase,
+        {
+            provide: USER_MODULE_TOKENS.CREATE_USER_USE_CASE,
+            useClass: CreateUserUseCase
+        },
         {
             provide: USER_MODULE_TOKENS.USER_REPOSITORY,
             useClass: UserRepository
         }
     ],
-    exports: [CreateUserUseCase, USER_MODULE_TOKENS.USER_REPOSITORY]
+    exports: [USER_MODULE_TOKENS.CREATE_USER_USE_CASE, USER_MODULE_TOKENS.USER_REPOSITORY]
 })
 export class UserModule {}

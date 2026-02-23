@@ -1,16 +1,19 @@
-import { Controller, Get, Post, Req, UseGuards } from "@nestjs/common";
+import { Controller, Get, Inject, Post, Req, UseGuards } from "@nestjs/common";
 import { Body } from "@nestjs/common";
 import { JwtGuard } from "src/modules/auth/jwt/guards/jwt-guard";
 import { ZodValidationPipe } from "src/commons/pipes/zod-validation.pipe";
 import type { TAddToFavorite } from "@shared/schemas/dictionary/add-to-favorite.schema";
 import { SAddToFavorite } from "@shared/schemas/dictionary/add-to-favorite.schema";
-import { GetRecentWordsUseCase } from "../../domain/use-cases/get-recent-words.use-case";
-import { AddToFavoriteUseCase } from "../../domain/use-cases/add-to-favorite.use-case";
+import type { GetRecentWordsUseCase } from "../../domain/use-cases/get-recent-words.use-case";
+import type { AddToFavoriteUseCase } from "../../domain/use-cases/add-to-favorite.use-case";
+import { WORDS_MODULE_TOKENS } from "../../constants/words-tokens.constants";
 
 @Controller("words")
 export class WordsController {
     constructor(
+        @Inject(WORDS_MODULE_TOKENS.GET_RECENT_WORDS_USE_CASE)
         private readonly getRecentWordsUseCase: GetRecentWordsUseCase,
+        @Inject(WORDS_MODULE_TOKENS.ADD_TO_FAVORITE_USE_CASE)
         private readonly addToFavoriteUseCase: AddToFavoriteUseCase
     ) {}
 

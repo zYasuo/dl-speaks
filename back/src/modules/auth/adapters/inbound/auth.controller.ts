@@ -1,18 +1,21 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from "@nestjs/common";
+import { Body, Controller, HttpCode, HttpStatus, Inject, Post } from "@nestjs/common";
 
 import { SSignin, SSigninResponse, type TSignin, type TSigninResponse } from "@shared/schemas/auth/signin.schema";
 
 import { SSignup, SSignupResponse, type TSignup, type TSignupResponse } from "@shared/schemas/auth/signup.schema";
 
-import { SigninUseCase } from "../../domain/use-cases/signin.use-case";
-import { SignupUseCase } from "../../domain/use-cases/signup.use-case";
+import type { SigninUseCase } from "../../domain/use-cases/signin.use-case";
+import type { SignupUseCase } from "../../domain/use-cases/signup.use-case";
+import { AUTH_MODULE_TOKENS } from "../../constants/auth.tokens.constants";
 import { ZodValidationPipe } from "src/commons/pipes/zod-validation.pipe";
 import { ZodResponse } from "src/commons/decorators/zod-response.decorator";
 
 @Controller("auth")
 export class AuthController {
     constructor(
+        @Inject(AUTH_MODULE_TOKENS.SIGNIN_USE_CASE)
         private readonly signinUseCase: SigninUseCase,
+        @Inject(AUTH_MODULE_TOKENS.SIGNUP_USE_CASE)
         private readonly signupUseCase: SignupUseCase
     ) {}
 

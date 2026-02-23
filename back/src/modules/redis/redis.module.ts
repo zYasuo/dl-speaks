@@ -7,13 +7,12 @@ import { RedisCacheAdapter } from "./adapters/outbound/redis-cache.adapter";
     providers: [
         {
             provide: REDIS_MODULE_TOKENS.REDIS_CLIENT,
-            useClass: RedisClient,
+            useClass: RedisClient
         },
-        RedisCacheAdapter,
         {
             provide: REDIS_MODULE_TOKENS.CACHE,
-            useClass: RedisCacheAdapter,
-        },
+            useClass: RedisCacheAdapter
+        }
     ],
     exports: [REDIS_MODULE_TOKENS.REDIS_CLIENT, REDIS_MODULE_TOKENS.CACHE],
 })

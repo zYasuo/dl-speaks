@@ -17,15 +17,17 @@ import { WordsModule } from "./modules/words/words.module";
             provide: DICTIONARY_MODULE_TOKENS.CLIENT_API,
             useFactory: (config: ConfigService) =>
                 config.get<string>("DICTIONARY_API_URL") ?? "",
-            inject: [ConfigService],
+            inject: [ConfigService]
         },
-        DictionaryApiClient,
         {
             provide: DICTIONARY_MODULE_TOKENS.DICTIONARY_CLIENT,
-            useExisting: DictionaryApiClient,
+            useClass: DictionaryApiClient
         },
-        GetWordUseCase,
+        {
+            provide: DICTIONARY_MODULE_TOKENS.GET_WORD_USE_CASE,
+            useClass: GetWordUseCase
+        },
     ],
-    exports: [GetWordUseCase],
+    exports: [DICTIONARY_MODULE_TOKENS.GET_WORD_USE_CASE],
 })
 export class DictionaryModule {}

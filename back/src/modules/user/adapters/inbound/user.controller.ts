@@ -1,12 +1,14 @@
 import { Controller, Get, UseGuards, Req, Inject, Post, Body } from "@nestjs/common";
 import { ZodResponse } from "src/commons/decorators/zod-response.decorator";
-import { CreateUserUseCase } from "../../domain/use-cases/create-user.use.case";
 import { SSignup, SSignupResponse, TSignupResponse, type TSignup } from "@shared/schemas/auth/signup.schema";
 import { ZodValidationPipe } from "src/commons/pipes/zod-validation.pipe";
+import { USER_MODULE_TOKENS } from "../../constants/user.tokens.constants";
+import type { CreateUserUseCase } from "../../domain/use-cases/create-user.use.case";
 
 @Controller("users")
 export class UserController {
     constructor(
+        @Inject(USER_MODULE_TOKENS.CREATE_USER_USE_CASE)
         private readonly createUserUseCase: CreateUserUseCase
         // private readonly getProfileUseCase: GetProfileUseCase,
     ) {}

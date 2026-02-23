@@ -15,21 +15,35 @@ import { WORDS_MODULE_TOKENS } from "./constants/words-tokens.constants";
     imports: [DatabaseModule, RedisModule, JwtAuthModule],
     controllers: [WordsController],
     providers: [
-        WordRepository,
         {
             provide: WORDS_MODULE_TOKENS.WORD_REPOSITORY,
             useClass: WordRepository
         },
-        FindWordByWordUseCase,
-        CreateWordFromApiUseCase,
-        GetRecentWordsUseCase,
-        AddToRecentWordsUseCase,
-        AddToFavoriteUseCase
+        {
+            provide: WORDS_MODULE_TOKENS.FIND_WORD_BY_WORD_USE_CASE,
+            useClass: FindWordByWordUseCase
+        },
+        {
+            provide: WORDS_MODULE_TOKENS.CREATE_WORD_FROM_API_USE_CASE,
+            useClass: CreateWordFromApiUseCase
+        },
+        {
+            provide: WORDS_MODULE_TOKENS.GET_RECENT_WORDS_USE_CASE,
+            useClass: GetRecentWordsUseCase
+        },
+        {
+            provide: WORDS_MODULE_TOKENS.ADD_TO_RECENT_WORDS_USE_CASE,
+            useClass: AddToRecentWordsUseCase
+        },
+        {
+            provide: WORDS_MODULE_TOKENS.ADD_TO_FAVORITE_USE_CASE,
+            useClass: AddToFavoriteUseCase
+        }
     ],
     exports: [
-        FindWordByWordUseCase,
-        CreateWordFromApiUseCase,
-        AddToRecentWordsUseCase
+        WORDS_MODULE_TOKENS.FIND_WORD_BY_WORD_USE_CASE,
+        WORDS_MODULE_TOKENS.CREATE_WORD_FROM_API_USE_CASE,
+        WORDS_MODULE_TOKENS.ADD_TO_RECENT_WORDS_USE_CASE
     ]
 })
 export class WordsModule {}

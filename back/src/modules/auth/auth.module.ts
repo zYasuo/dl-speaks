@@ -12,18 +12,22 @@ import { AUTH_MODULE_TOKENS } from "./constants/auth.tokens.constants";
     imports: [UserModule, JwtAuthModule],
     controllers: [AuthController],
     providers: [
-        SigninUseCase,
-        SignupUseCase,
-        Argon2PasswordAdapter,
+        {
+            provide: AUTH_MODULE_TOKENS.SIGNIN_USE_CASE,
+            useClass: SigninUseCase
+        },
+        {
+            provide: AUTH_MODULE_TOKENS.SIGNUP_USE_CASE,
+            useClass: SignupUseCase
+        },
         {
             provide: AUTH_MODULE_TOKENS.PASSWORD_HASHER,
-            useExisting: Argon2PasswordAdapter
+            useClass: Argon2PasswordAdapter
         },
         {
             provide: AUTH_MODULE_TOKENS.PASSWORD_VERIFIER,
-            useExisting: Argon2PasswordAdapter
+            useExisting: AUTH_MODULE_TOKENS.PASSWORD_HASHER
         },
-        JwtTokenGeneratorAdapter,
         {
             provide: AUTH_MODULE_TOKENS.TOKEN_GENERATOR,
             useClass: JwtTokenGeneratorAdapter

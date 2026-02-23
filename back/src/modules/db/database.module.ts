@@ -6,8 +6,8 @@ import { DatabaseConfigService } from "./services/database-config.service";
     providers: [
         {
             provide: DATABASE_MODULE_TOKENS.DATABASE_SERVICE,
-            useClass: DatabaseConfigService,
-        },
+            useClass: DatabaseConfigService
+        }
     ],
     exports: [DATABASE_MODULE_TOKENS.DATABASE_SERVICE],
 })

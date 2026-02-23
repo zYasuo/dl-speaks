@@ -3,7 +3,7 @@ import { USER_ERRORS } from "src/commons/constants/errors/user-errors.constants"
 import { USER_MODULE_TOKENS } from "src/modules/user/constants/user.tokens.constants";
 import type { IUserRepository } from "src/modules/user/domain/ports/user-repository,port";
 import type { IPasswordHasher } from "../ports/password-hasher.port";
-import { CreateUserUseCase } from "src/modules/user/domain/use-cases/create-user.use.case";
+import type { CreateUserUseCase } from "src/modules/user/domain/use-cases/create-user.use.case";
 import { AUTH_MODULE_TOKENS } from "../../constants/auth.tokens.constants";
 
 @Injectable()
@@ -13,6 +13,7 @@ export class SignupUseCase {
         private readonly userRepository: IUserRepository,
         @Inject(AUTH_MODULE_TOKENS.PASSWORD_HASHER)
         private readonly passwordHasher: IPasswordHasher,
+        @Inject(USER_MODULE_TOKENS.CREATE_USER_USE_CASE)
         private readonly createUserUseCase: CreateUserUseCase
     ) {}
 
