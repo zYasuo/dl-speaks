@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 import { REDIS_MODULE_TOKENS } from "./constants/redis-tokens.constants";
 import { RedisClient } from "./client/redis.client";
-import { CacheService } from "./services/cache.service";
+import { RedisCacheAdapter } from "./adapters/outbound/redis-cache.adapter";
 
 @Module({
     providers: [
@@ -9,9 +9,10 @@ import { CacheService } from "./services/cache.service";
             provide: REDIS_MODULE_TOKENS.REDIS_CLIENT,
             useClass: RedisClient,
         },
+        RedisCacheAdapter,
         {
             provide: REDIS_MODULE_TOKENS.CACHE,
-            useClass: CacheService,
+            useClass: RedisCacheAdapter,
         },
     ],
     exports: [REDIS_MODULE_TOKENS.REDIS_CLIENT, REDIS_MODULE_TOKENS.CACHE],

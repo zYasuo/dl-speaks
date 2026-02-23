@@ -1,10 +1,10 @@
-import { Injectable, Inject } from "@nestjs/common";
-import type { IRedisClient } from "../client/interfaces/redis-client.interface";
-import { REDIS_MODULE_TOKENS } from "../constants/redis-tokens.constants";
-import type { ICacheService } from "./interfaces/cache-service.interface";
+import { Inject, Injectable } from "@nestjs/common";
+import type { ICacheService } from "../../domain/ports/cache.port";
+import type { IRedisClient } from "../../client/interfaces/redis-client.interface";
+import { REDIS_MODULE_TOKENS } from "../../constants/redis-tokens.constants";
 
 @Injectable()
-export class CacheService implements ICacheService {
+export class RedisCacheAdapter implements ICacheService {
     constructor(
         @Inject(REDIS_MODULE_TOKENS.REDIS_CLIENT)
         private readonly redisClient: IRedisClient

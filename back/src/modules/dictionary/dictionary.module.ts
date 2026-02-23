@@ -4,10 +4,9 @@ import { HttpModule } from "@nestjs/axios";
 import { DatabaseModule } from "../db/database.module";
 import { RedisModule } from "../redis/redis.module";
 import { DictionaryApiClient } from "./client/client.api";
-import { DictionaryService } from "./services/dictionary.service";
-import { WordsService } from "./modules/words/services/words.service";
+import { GetWordUseCase } from "./domain/use-cases/get-word.use-case";
 import { DICTIONARY_MODULE_TOKENS } from "./constants/dictonary.tokens";
-import { DictionaryController } from "./controller/dictionary.controller";
+import { DictionaryController } from "./adapters/inbound/dictionary.controller";
 import { WordsModule } from "./modules/words/words.module";
 
 @Module({
@@ -25,17 +24,8 @@ import { WordsModule } from "./modules/words/words.module";
             provide: DICTIONARY_MODULE_TOKENS.DICTIONARY_CLIENT,
             useExisting: DictionaryApiClient,
         },
-        WordsService,
-        {
-            provide: DICTIONARY_MODULE_TOKENS.WORDS_SERVICE,
-            useExisting: WordsService,
-        },
-        DictionaryService,
-        {
-            provide: DICTIONARY_MODULE_TOKENS.DICTIONARY_SERVICE,
-            useClass: DictionaryService,
-        },
+        GetWordUseCase,
     ],
-    exports: [DICTIONARY_MODULE_TOKENS.DICTIONARY_SERVICE],
+    exports: [GetWordUseCase],
 })
 export class DictionaryModule {}
