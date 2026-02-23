@@ -1,20 +1,21 @@
 import { Module } from "@nestjs/common";
-import { UserService } from "./services/user.service";
 import { USER_MODULE_TOKENS } from "./constants/user.tokens.constants";
 import { DatabaseModule } from "../db/database.module";
-import { UserController } from "./controller/user.controller";
 import { JwtAuthModule } from "../auth/jwt/jwt.module";
+import { UserController } from "./adapters/inbound/user.controller";
+import { CreateUserUseCase } from "./domain/use-cases/create-user.use.case";
+import { UserRepository } from "./adapters/outbound/user.repository";
 
 @Module({
     imports: [DatabaseModule, JwtAuthModule],
     controllers: [UserController],
     providers: [
-        UserService,
+        CreateUserUseCase,
         {
-            provide: USER_MODULE_TOKENS.USER_SERVICE,
-            useClass: UserService
+            provide: USER_MODULE_TOKENS.USER_REPOSITORY,
+            useClass: UserRepository
         }
     ],
-    exports: [USER_MODULE_TOKENS.USER_SERVICE],
+    exports: [CreateUserUseCase]
 })
 export class UserModule {}
