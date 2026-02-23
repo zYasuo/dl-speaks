@@ -16,6 +16,6 @@ import { UserRepository } from "./adapters/outbound/user.repository";
             useClass: UserRepository
         }
     ],
-    exports: [CreateUserUseCase]
+    exports: [CreateUserUseCase, USER_MODULE_TOKENS.USER_REPOSITORY]
 })
 export class UserModule {}

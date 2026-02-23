@@ -1,13 +1,22 @@
-import { PrismaClient } from "@prisma/client";
+import { ConflictException, Inject, Injectable } from "@nestjs/common";
+import { Prisma, PrismaClient } from "@prisma/client";
+import { DATABASE_MODULE_TOKENS } from "src/modules/db/constants/db-tokens.constants";
+import type { IDatabaseService } from "src/modules/db/services/interfaces/database-config-service.interface";
 import type { IUserRepository } from "../../domain/ports/user-repository,port";
-import { TSignup } from "@shared/schemas/auth/signup.schema";
 import { UserEntity } from "../../domain/entities/user.entity";
-import { Prisma } from "@prisma/client";
-import { ConflictException } from "@nestjs/common";
+import { TSignup } from "@shared/schemas/auth/signup.schema";
 import { USER_ERRORS } from "src/commons/constants/errors/user-errors.constants";
 
+@Injectable()
 export class UserRepository implements IUserRepository {
-    constructor(private readonly prisma: PrismaClient) {}
+    private readonly prisma: PrismaClient;
+
+    constructor(
+        @Inject(DATABASE_MODULE_TOKENS.DATABASE_SERVICE)
+        private readonly database: IDatabaseService
+    ) {
+        this.prisma = this.database.getClient();
+    }
 
     async createUser(user: TSignup): Promise<UserEntity> {
         try {
@@ -19,5 +28,18 @@ export class UserRepository implements IUserRepository {
             }
             throw e;
         }
+    }
+
+    async getUserByEmail(email: string): Promise<UserEntity | null> {
+        const user = await this.prisma.user.findUnique({ where: { email } });
+        return user ? UserEntity.fromPrisma(user) : null;
+    }
+
+    async isUserExists(email: string): Promise<boolean> {
+        const user = await this.prisma.user.findUnique({
+            where: { email },
+            select: { id: true }
+        });
+        return user !== null;
     }
 }
