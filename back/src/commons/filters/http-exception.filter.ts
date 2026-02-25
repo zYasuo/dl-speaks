@@ -6,7 +6,8 @@ import {
     HttpStatus,
     Logger,
 } from "@nestjs/common";
-import { Request, Response } from "express";
+import { Response } from "express";
+import { DomainException } from "../domain/exceptions/domain.exception";
 
 @Catch()
 export class GlobalHttpExceptionFilter implements ExceptionFilter {
@@ -15,7 +16,15 @@ export class GlobalHttpExceptionFilter implements ExceptionFilter {
     catch(exception: unknown, host: ArgumentsHost): void {
         const ctx = host.switchToHttp();
         const res = ctx.getResponse<Response>();
-        const req = ctx.getRequest<Request>();
+
+        if (exception instanceof DomainException) {
+            res.status(exception.httpStatus).json({
+                statusCode: exception.httpStatus,
+                message: exception.message,
+                error: exception.code,
+            });
+            return;
+        }
 
         if (exception instanceof HttpException) {
             const status = exception.getStatus();

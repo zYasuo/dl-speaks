@@ -1,9 +1,8 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { UnauthorizedException } from "@nestjs/common";
 import { USER_MODULE_TOKENS } from "src/modules/user/constants/user.tokens.constants";
 import { AUTH_MODULE_TOKENS } from "../../constants/auth.tokens.constants";
 import { SigninUseCase } from "./signin.use-case";
-import { AUTH_ERRORS } from "src/commons/constants/errors/auth-errors.constants";
+import { InvalidCredentialsError } from "src/commons/domain/exceptions/auth.exceptions";
 
 const mockUserRepository = {
     getUserByEmail: jest.fn(),
@@ -24,7 +23,16 @@ describe("SigninUseCase", () => {
         jest.clearAllMocks();
         const module: TestingModule = await Test.createTestingModule({
             providers: [
-                SigninUseCase,
+                {
+                    provide: SigninUseCase,
+                    useFactory: (userRepository, passwordVerifier, tokenGenerator) =>
+                        new SigninUseCase(userRepository, passwordVerifier, tokenGenerator),
+                    inject: [
+                        USER_MODULE_TOKENS.USER_REPOSITORY,
+                        AUTH_MODULE_TOKENS.PASSWORD_VERIFIER,
+                        AUTH_MODULE_TOKENS.TOKEN_GENERATOR,
+                    ],
+                },
                 {
                     provide: USER_MODULE_TOKENS.USER_REPOSITORY,
                     useValue: mockUserRepository,
@@ -74,18 +82,16 @@ describe("SigninUseCase", () => {
         });
     });
 
-    it("should throw UnauthorizedException when user not found", async () => {
+    it("should throw InvalidCredentialsError when user not found", async () => {
         mockUserRepository.getUserByEmail.mockResolvedValue(null);
 
-        await expect(useCase.execute("a@b.com", "pass")).rejects.toThrow(UnauthorizedException);
-        await expect(useCase.execute("a@b.com", "pass")).rejects.toThrow(
-            AUTH_ERRORS.INVALID_CREDENTIALS
-        );
+        await expect(useCase.execute("a@b.com", "pass")).rejects.toThrow(InvalidCredentialsError);
+        await expect(useCase.execute("a@b.com", "pass")).rejects.toThrow("Invalid credentials");
         expect(mockPasswordVerifier.verify).not.toHaveBeenCalled();
         expect(mockTokenGenerator.sign).not.toHaveBeenCalled();
     });
 
-    it("should throw UnauthorizedException when password is invalid", async () => {
+    it("should throw InvalidCredentialsError when password is invalid", async () => {
         const user = {
             uuid: "u1",
             email: "a@b.com",
@@ -96,10 +102,8 @@ describe("SigninUseCase", () => {
         mockUserRepository.getUserByEmail.mockResolvedValue(user);
         mockPasswordVerifier.verify.mockResolvedValue(false);
 
-        await expect(useCase.execute("a@b.com", "wrong")).rejects.toThrow(UnauthorizedException);
-        await expect(useCase.execute("a@b.com", "wrong")).rejects.toThrow(
-            AUTH_ERRORS.INVALID_CREDENTIALS
-        );
+        await expect(useCase.execute("a@b.com", "wrong")).rejects.toThrow(InvalidCredentialsError);
+        await expect(useCase.execute("a@b.com", "wrong")).rejects.toThrow("Invalid credentials");
         expect(mockTokenGenerator.sign).not.toHaveBeenCalled();
     });
 });

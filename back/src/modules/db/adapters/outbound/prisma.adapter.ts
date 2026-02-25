@@ -1,9 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaClient } from "@prisma/client";
-import type { IDatabaseService } from "../../domain/ports/database.port";
 
 @Injectable()
-export class PrismaAdapter implements IDatabaseService {
+export class PrismaAdapter {
     private readonly prisma: PrismaClient;
 
     constructor() {

@@ -1,9 +1,8 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { NotFoundException } from "@nestjs/common";
 import { DAILY_GOAL_MODULE_TOKENS } from "../../constants/daily-goal-tokens.constants";
 import { USER_MODULE_TOKENS } from "src/modules/user/constants/user.tokens.constants";
 import { GetOrCreateTodayGoalUseCase } from "./get-or-create-today-goal.use-case";
-import { USER_ERRORS } from "src/commons/constants/errors/user-errors.constants";
+import { UserNotFoundError } from "src/commons/domain/exceptions/user.exceptions";
 
 const mockDailyGoalRepository = {
     find: jest.fn(),
@@ -25,7 +24,16 @@ describe("GetOrCreateTodayGoalUseCase", () => {
         jest.clearAllMocks();
         const module: TestingModule = await Test.createTestingModule({
             providers: [
-                GetOrCreateTodayGoalUseCase,
+                {
+                    provide: GetOrCreateTodayGoalUseCase,
+                    useFactory: (dailyGoalRepository, clock, userRepository) =>
+                        new GetOrCreateTodayGoalUseCase(dailyGoalRepository, clock, userRepository),
+                    inject: [
+                        DAILY_GOAL_MODULE_TOKENS.DAILY_GOAL_REPOSITORY,
+                        DAILY_GOAL_MODULE_TOKENS.CLOCK,
+                        USER_MODULE_TOKENS.USER_REPOSITORY,
+                    ],
+                },
                 {
                     provide: DAILY_GOAL_MODULE_TOKENS.DAILY_GOAL_REPOSITORY,
                     useValue: mockDailyGoalRepository,
@@ -44,11 +52,11 @@ describe("GetOrCreateTodayGoalUseCase", () => {
         useCase = module.get(GetOrCreateTodayGoalUseCase);
     });
 
-    it("should throw NotFoundException when user not found", async () => {
+    it("should throw UserNotFoundError when user not found", async () => {
         mockUserRepository.getUserByUuid.mockResolvedValue(null);
 
-        await expect(useCase.execute("unknown-uuid")).rejects.toThrow(NotFoundException);
-        await expect(useCase.execute("unknown-uuid")).rejects.toThrow(USER_ERRORS.USER_NOT_FOUND);
+        await expect(useCase.execute("unknown-uuid")).rejects.toThrow(UserNotFoundError);
+        await expect(useCase.execute("unknown-uuid")).rejects.toThrow("User not found");
         expect(mockDailyGoalRepository.find).not.toHaveBeenCalled();
     });
 

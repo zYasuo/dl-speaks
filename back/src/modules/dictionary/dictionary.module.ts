@@ -6,6 +6,7 @@ import { DatabaseModule } from "../db/database.module";
 import { RedisModule } from "../redis/redis.module";
 import { JwtAuthModule } from "../auth/jwt/jwt.module";
 import { DICTIONARY_MODULE_TOKENS } from "./constants/dictionary.tokens";
+import { REDIS_MODULE_TOKENS } from "../redis/constants/redis-tokens.constants";
 import { SENTENCE_QUEUE_NAME } from "./constants/dictionary.constants";
 import { DictionaryController } from "./adapters/inbound/dictionary.controller";
 import { WordsController } from "./adapters/inbound/words.controller";
@@ -58,28 +59,51 @@ import { AddToFavoriteUseCase } from "./domain/use-cases/add-to-favorite.use-cas
             useClass: WordRepository,
         },
         {
-            provide: DICTIONARY_MODULE_TOKENS.GET_WORD_USE_CASE,
-            useClass: GetWordUseCase,
-        },
-        {
             provide: DICTIONARY_MODULE_TOKENS.FIND_WORD_BY_WORD_USE_CASE,
-            useClass: FindWordByWordUseCase,
+            useFactory: (wordRepository, cache) =>
+                new FindWordByWordUseCase(wordRepository, cache),
+            inject: [DICTIONARY_MODULE_TOKENS.WORD_REPOSITORY, REDIS_MODULE_TOKENS.CACHE],
         },
         {
             provide: DICTIONARY_MODULE_TOKENS.CREATE_WORD_FROM_API_USE_CASE,
-            useClass: CreateWordFromApiUseCase,
+            useFactory: (wordRepository) => new CreateWordFromApiUseCase(wordRepository),
+            inject: [DICTIONARY_MODULE_TOKENS.WORD_REPOSITORY],
         },
         {
             provide: DICTIONARY_MODULE_TOKENS.GET_RECENT_WORDS_USE_CASE,
-            useClass: GetRecentWordsUseCase,
+            useFactory: (cache) => new GetRecentWordsUseCase(cache),
+            inject: [REDIS_MODULE_TOKENS.CACHE],
         },
         {
             provide: DICTIONARY_MODULE_TOKENS.ADD_TO_RECENT_WORDS_USE_CASE,
-            useClass: AddToRecentWordsUseCase,
+            useFactory: (cache) => new AddToRecentWordsUseCase(cache),
+            inject: [REDIS_MODULE_TOKENS.CACHE],
         },
         {
             provide: DICTIONARY_MODULE_TOKENS.ADD_TO_FAVORITE_USE_CASE,
-            useClass: AddToFavoriteUseCase,
+            useFactory: (wordRepository) => new AddToFavoriteUseCase(wordRepository),
+            inject: [DICTIONARY_MODULE_TOKENS.WORD_REPOSITORY],
+        },
+        {
+            provide: DICTIONARY_MODULE_TOKENS.GET_WORD_USE_CASE,
+            useFactory: (
+                dictionaryClient,
+                findWordByWordUseCase,
+                createWordFromApiUseCase,
+                addToRecentWordsUseCase
+            ) =>
+                new GetWordUseCase(
+                    dictionaryClient,
+                    findWordByWordUseCase,
+                    createWordFromApiUseCase,
+                    addToRecentWordsUseCase
+                ),
+            inject: [
+                DICTIONARY_MODULE_TOKENS.DICTIONARY_CLIENT,
+                DICTIONARY_MODULE_TOKENS.FIND_WORD_BY_WORD_USE_CASE,
+                DICTIONARY_MODULE_TOKENS.CREATE_WORD_FROM_API_USE_CASE,
+                DICTIONARY_MODULE_TOKENS.ADD_TO_RECENT_WORDS_USE_CASE,
+            ],
         },
         {
             provide: DICTIONARY_MODULE_TOKENS.TATOEBA_API_URL,
@@ -102,7 +126,12 @@ import { AddToFavoriteUseCase } from "./domain/use-cases/add-to-favorite.use-cas
         },
         {
             provide: DICTIONARY_MODULE_TOKENS.SYNC_SENTENCES_FROM_TATOEBA_USE_CASE,
-            useClass: SyncSentencesFromTatoebaUseCase,
+            useFactory: (tatoebaClient, sentenceRepository) =>
+                new SyncSentencesFromTatoebaUseCase(tatoebaClient, sentenceRepository),
+            inject: [
+                DICTIONARY_MODULE_TOKENS.TATOEBA_CLIENT,
+                DICTIONARY_MODULE_TOKENS.SENTENCE_REPOSITORY,
+            ],
         },
         SentenceProcessor,
         SentenceScheduler,

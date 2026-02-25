@@ -17,7 +17,15 @@ describe("SyncSentencesFromTatoebaUseCase", () => {
         jest.clearAllMocks();
         const module: TestingModule = await Test.createTestingModule({
             providers: [
-                SyncSentencesFromTatoebaUseCase,
+                {
+                    provide: SyncSentencesFromTatoebaUseCase,
+                    useFactory: (tatoebaClient, sentenceRepository) =>
+                        new SyncSentencesFromTatoebaUseCase(tatoebaClient, sentenceRepository),
+                    inject: [
+                        DICTIONARY_MODULE_TOKENS.TATOEBA_CLIENT,
+                        DICTIONARY_MODULE_TOKENS.SENTENCE_REPOSITORY,
+                    ],
+                },
                 {
                     provide: DICTIONARY_MODULE_TOKENS.TATOEBA_CLIENT,
                     useValue: mockTatoebaClient,

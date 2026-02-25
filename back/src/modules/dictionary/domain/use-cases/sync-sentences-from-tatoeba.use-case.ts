@@ -1,5 +1,3 @@
-import { Inject, Injectable } from "@nestjs/common";
-import { DICTIONARY_MODULE_TOKENS } from "../../constants/dictionary.tokens";
 import type { ITatoebaClient } from "../ports/tatoeba-client.port";
 import type { ISentenceRepository } from "../ports/sentence-repository.port";
 import {
@@ -7,12 +5,9 @@ import {
     SENTENCE_SYNC_SEED_QUERIES,
 } from "../../constants/dictionary.constants";
 
-@Injectable()
 export class SyncSentencesFromTatoebaUseCase {
     constructor(
-        @Inject(DICTIONARY_MODULE_TOKENS.TATOEBA_CLIENT)
         private readonly tatoebaClient: ITatoebaClient,
-        @Inject(DICTIONARY_MODULE_TOKENS.SENTENCE_REPOSITORY)
         private readonly sentenceRepository: ISentenceRepository
     ) {}
 

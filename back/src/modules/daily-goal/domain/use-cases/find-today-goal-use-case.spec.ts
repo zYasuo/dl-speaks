@@ -17,7 +17,12 @@ describe("FindTodayGoalUseCase", () => {
         jest.clearAllMocks();
         const module: TestingModule = await Test.createTestingModule({
             providers: [
-                FindTodayGoalUseCase,
+                {
+                    provide: FindTodayGoalUseCase,
+                    useFactory: (dailyGoalRepository, clock) =>
+                        new FindTodayGoalUseCase(dailyGoalRepository, clock),
+                    inject: [DAILY_GOAL_MODULE_TOKENS.DAILY_GOAL_REPOSITORY, DAILY_GOAL_MODULE_TOKENS.CLOCK],
+                },
                 {
                     provide: DAILY_GOAL_MODULE_TOKENS.DAILY_GOAL_REPOSITORY,
                     useValue: mockDailyGoalRepository,

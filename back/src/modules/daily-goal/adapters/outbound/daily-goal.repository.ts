@@ -1,11 +1,10 @@
-import { Inject, Injectable, NotFoundException } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { DATABASE_MODULE_TOKENS } from "src/modules/db/constants/db-tokens.constants";
-import { DAILY_GOAL_ERRORS } from "src/commons/constants/errors/daily-goal-errors.constants";
-import type { IDatabaseService } from "src/modules/db/domain/ports/database.port";
 import type { IDailyGoalRepository } from "../../domain/ports/daily-goal-repository.port";
 import type { TDailyGoalTodayResponse } from "@shared/schemas/daily-goal/daily-goal-today-response.schema";
 import { ITEMS_PER_DAY, DAYS_TO_EXCLUDE_RECENT } from "../../constants/daily-goal.constants";
 import { PrismaClient } from "@prisma/client";
+import { ItemNotFoundError } from "src/commons/domain/exceptions/daily-goal.exceptions";
 
 const dailyGoalInclude = {
     items: {
@@ -16,14 +15,10 @@ const dailyGoalInclude = {
 
 @Injectable()
 export class DailyGoalRepository implements IDailyGoalRepository {
-    private readonly prisma: PrismaClient;
-
     constructor(
-        @Inject(DATABASE_MODULE_TOKENS.DATABASE_SERVICE)
-        private readonly database: IDatabaseService
-    ) {
-        this.prisma = this.database.getClient();
-    }
+        @Inject(DATABASE_MODULE_TOKENS.PRISMA_CLIENT)
+        private readonly prisma: PrismaClient
+    ) {}
 
     async find(userId: number, date: Date): Promise<TDailyGoalTodayResponse | null> {
         const goal = await this.prisma.dailyGoal.findUnique({
@@ -73,7 +68,7 @@ export class DailyGoalRepository implements IDailyGoalRepository {
             },
             select: { id: true }
         });
-        if (!item) throw new NotFoundException(DAILY_GOAL_ERRORS.ITEM_NOT_FOUND);
+        if (!item) throw new ItemNotFoundError();
         await this.prisma.dailyGoalItem.update({
             where: { id: itemId },
             data: { completed_at: new Date() }

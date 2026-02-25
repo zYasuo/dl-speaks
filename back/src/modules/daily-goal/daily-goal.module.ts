@@ -6,6 +6,7 @@ import { JwtAuthModule } from "../auth/jwt/jwt.module";
 import { UserModule } from "../user/user.module";
 import { DAILY_GOAL_QUEUE_NAME } from "./constants/daily-goal.constants";
 import { DAILY_GOAL_MODULE_TOKENS } from "./constants/daily-goal-tokens.constants";
+import { USER_MODULE_TOKENS } from "../user/constants/user.tokens.constants";
 import { DailyGoalController } from "./adapters/inbound/daily-goal.controller";
 import { DailyGoalScheduler } from "./adapters/inbound/daily-goal-scheduler";
 import { DailyGoalProcessor } from "./adapters/inbound/daily-goal.processor";
@@ -49,15 +50,28 @@ import { EnsureTodayGoalsForAllUsersUseCase } from "./domain/use-cases/ensure-to
         },
         {
             provide: DAILY_GOAL_MODULE_TOKENS.GET_OR_CREATE_TODAY_GOAL_USE_CASE,
-            useClass: GetOrCreateTodayGoalUseCase,
+            useFactory: (dailyGoalRepository, clock, userRepository) =>
+                new GetOrCreateTodayGoalUseCase(dailyGoalRepository, clock, userRepository),
+            inject: [
+                DAILY_GOAL_MODULE_TOKENS.DAILY_GOAL_REPOSITORY,
+                DAILY_GOAL_MODULE_TOKENS.CLOCK,
+                USER_MODULE_TOKENS.USER_REPOSITORY,
+            ],
         },
         {
             provide: DAILY_GOAL_MODULE_TOKENS.MARK_ITEM_COMPLETE_USE_CASE,
-            useClass: MarkItemCompleteUseCase,
+            useFactory: (dailyGoalRepository, userRepository) =>
+                new MarkItemCompleteUseCase(dailyGoalRepository, userRepository),
+            inject: [
+                DAILY_GOAL_MODULE_TOKENS.DAILY_GOAL_REPOSITORY,
+                USER_MODULE_TOKENS.USER_REPOSITORY,
+            ],
         },
         {
             provide: DAILY_GOAL_MODULE_TOKENS.ENSURE_TODAY_GOALS_FOR_ALL_USERS_USE_CASE,
-            useClass: EnsureTodayGoalsForAllUsersUseCase,
+            useFactory: (dailyGoalRepository, clock) =>
+                new EnsureTodayGoalsForAllUsersUseCase(dailyGoalRepository, clock),
+            inject: [DAILY_GOAL_MODULE_TOKENS.DAILY_GOAL_REPOSITORY, DAILY_GOAL_MODULE_TOKENS.CLOCK],
         },
         DailyGoalProcessor,
         DailyGoalScheduler,

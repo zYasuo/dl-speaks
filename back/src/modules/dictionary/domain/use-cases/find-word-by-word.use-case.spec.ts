@@ -20,7 +20,12 @@ describe("FindWordByWordUseCase", () => {
         jest.clearAllMocks();
         const module: TestingModule = await Test.createTestingModule({
             providers: [
-                FindWordByWordUseCase,
+                {
+                    provide: FindWordByWordUseCase,
+                    useFactory: (wordRepository, cache) =>
+                        new FindWordByWordUseCase(wordRepository, cache),
+                    inject: [DICTIONARY_MODULE_TOKENS.WORD_REPOSITORY, REDIS_MODULE_TOKENS.CACHE],
+                },
                 {
                     provide: DICTIONARY_MODULE_TOKENS.WORD_REPOSITORY,
                     useValue: mockWordRepository,

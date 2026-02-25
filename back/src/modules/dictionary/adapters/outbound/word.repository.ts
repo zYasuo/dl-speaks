@@ -1,23 +1,18 @@
-import { BadRequestException, Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { Prisma, PrismaClient } from "@prisma/client";
 import { DATABASE_MODULE_TOKENS } from "src/modules/db/constants/db-tokens.constants";
-import type { IDatabaseService } from "src/modules/db/domain/ports/database.port";
 import type { IWordRepository } from "../../domain/ports/word-repository.port";
 import { WordEntity } from "../../domain/entities/word.entity";
 import type { TWordEntry } from "@shared/schemas/dictionary/words.schema";
-import { WORDS_ERRORS } from "src/commons/constants/errors/words-erros.constants";
 import { WORD_INCLUDE } from "../../constants/dictionary.constants";
+import { WordAlreadyInFavoriteError } from "src/commons/domain/exceptions/word.exceptions";
 
 @Injectable()
 export class WordRepository implements IWordRepository {
-    private readonly prisma: PrismaClient;
-
     constructor(
-        @Inject(DATABASE_MODULE_TOKENS.DATABASE_SERVICE)
-        private readonly database: IDatabaseService
-    ) {
-        this.prisma = this.database.getClient();
-    }
+        @Inject(DATABASE_MODULE_TOKENS.PRISMA_CLIENT)
+        private readonly prisma: PrismaClient
+    ) {}
 
     async findByWord(word: string): Promise<WordEntity | null> {
         const normalized = word.toLowerCase().trim();
@@ -88,7 +83,7 @@ export class WordRepository implements IWordRepository {
             });
         } catch (e) {
             if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
-                throw new BadRequestException(WORDS_ERRORS.WORD_ALREADY_IN_FAVORITE);
+                throw new WordAlreadyInFavoriteError();
             }
             throw e;
         }

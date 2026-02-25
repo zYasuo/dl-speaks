@@ -7,6 +7,7 @@ import { SignupUseCase } from "./domain/use-cases/signup.use-case";
 import { Argon2PasswordAdapter } from "./adapters/outbound/argon2-password.adapter";
 import { JwtTokenGeneratorAdapter } from "./adapters/outbound/jwt-token-generator.adapter";
 import { AUTH_MODULE_TOKENS } from "./constants/auth.tokens.constants";
+import { USER_MODULE_TOKENS } from "../user/constants/user.tokens.constants";
 
 @Module({
     imports: [UserModule, JwtAuthModule],
@@ -14,11 +15,23 @@ import { AUTH_MODULE_TOKENS } from "./constants/auth.tokens.constants";
     providers: [
         {
             provide: AUTH_MODULE_TOKENS.SIGNIN_USE_CASE,
-            useClass: SigninUseCase
+            useFactory: (userRepository, passwordVerifier, tokenGenerator) =>
+                new SigninUseCase(userRepository, passwordVerifier, tokenGenerator),
+            inject: [
+                USER_MODULE_TOKENS.USER_REPOSITORY,
+                AUTH_MODULE_TOKENS.PASSWORD_VERIFIER,
+                AUTH_MODULE_TOKENS.TOKEN_GENERATOR,
+            ],
         },
         {
             provide: AUTH_MODULE_TOKENS.SIGNUP_USE_CASE,
-            useClass: SignupUseCase
+            useFactory: (userRepository, passwordHasher, createUserUseCase) =>
+                new SignupUseCase(userRepository, passwordHasher, createUserUseCase),
+            inject: [
+                USER_MODULE_TOKENS.USER_REPOSITORY,
+                AUTH_MODULE_TOKENS.PASSWORD_HASHER,
+                USER_MODULE_TOKENS.CREATE_USER_USE_CASE,
+            ],
         },
         {
             provide: AUTH_MODULE_TOKENS.PASSWORD_HASHER,

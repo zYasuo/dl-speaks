@@ -1,18 +1,12 @@
-import { Inject, Injectable } from "@nestjs/common";
-import { REDIS_MODULE_TOKENS } from "src/modules/redis/constants/redis-tokens.constants";
 import type { ICacheService } from "src/modules/redis/domain/ports/cache.port";
 import type { IWordRepository } from "../ports/word-repository.port";
 import { WordEntity } from "../entities/word.entity";
-import { DICTIONARY_MODULE_TOKENS } from "../../constants/dictionary.tokens";
 
 const WORD_CACHE_TTL = 60 * 60 * 24;
 
-@Injectable()
 export class FindWordByWordUseCase {
     constructor(
-        @Inject(DICTIONARY_MODULE_TOKENS.WORD_REPOSITORY)
         private readonly wordRepository: IWordRepository,
-        @Inject(REDIS_MODULE_TOKENS.CACHE)
         private readonly cache: ICacheService
     ) {}
 

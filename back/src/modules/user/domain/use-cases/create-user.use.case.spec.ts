@@ -13,7 +13,11 @@ describe("CreateUserUseCase", () => {
         jest.clearAllMocks();
         const module: TestingModule = await Test.createTestingModule({
             providers: [
-                CreateUserUseCase,
+                {
+                    provide: CreateUserUseCase,
+                    useFactory: (userRepository) => new CreateUserUseCase(userRepository),
+                    inject: [USER_MODULE_TOKENS.USER_REPOSITORY],
+                },
                 {
                     provide: USER_MODULE_TOKENS.USER_REPOSITORY,
                     useValue: mockUserRepository,

@@ -1,5 +1,3 @@
-import { Inject, Injectable } from "@nestjs/common";
-import { REDIS_MODULE_TOKENS } from "src/modules/redis/constants/redis-tokens.constants";
 import type { ICacheService } from "src/modules/redis/domain/ports/cache.port";
 import {
     RECENT_WORDS_CACHE_KEY,
@@ -7,12 +5,8 @@ import {
     RECENT_WORDS_MAX_SIZE,
 } from "../../constants/dictionary.constants";
 
-@Injectable()
 export class AddToRecentWordsUseCase {
-    constructor(
-        @Inject(REDIS_MODULE_TOKENS.CACHE)
-        private readonly cache: ICacheService
-    ) {}
+    constructor(private readonly cache: ICacheService) {}
 
     async execute(word: string): Promise<void> {
         const normalized = word.toLowerCase().trim();

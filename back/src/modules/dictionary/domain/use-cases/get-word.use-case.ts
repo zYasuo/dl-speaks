@@ -1,20 +1,14 @@
-import { Inject, Injectable, NotFoundException } from "@nestjs/common";
-import { DICTIONARY_MODULE_TOKENS } from "../../constants/dictionary.tokens";
 import type { IDictionaryApiClient } from "../ports/dictionary-api.port";
 import type { FindWordByWordUseCase } from "./find-word-by-word.use-case";
 import type { CreateWordFromApiUseCase } from "./create-word-from-api.use-case";
 import type { AddToRecentWordsUseCase } from "./add-to-recent-words.use-case";
+import { WordNotFoundError } from "src/commons/domain/exceptions/word.exceptions";
 
-@Injectable()
 export class GetWordUseCase {
     constructor(
-        @Inject(DICTIONARY_MODULE_TOKENS.DICTIONARY_CLIENT)
         private readonly dictionaryApiClient: IDictionaryApiClient,
-        @Inject(DICTIONARY_MODULE_TOKENS.FIND_WORD_BY_WORD_USE_CASE)
         private readonly findWordByWordUseCase: FindWordByWordUseCase,
-        @Inject(DICTIONARY_MODULE_TOKENS.CREATE_WORD_FROM_API_USE_CASE)
         private readonly createWordFromApiUseCase: CreateWordFromApiUseCase,
-        @Inject(DICTIONARY_MODULE_TOKENS.ADD_TO_RECENT_WORDS_USE_CASE)
         private readonly addToRecentWordsUseCase: AddToRecentWordsUseCase
     ) {}
 
@@ -41,7 +35,7 @@ export class GetWordUseCase {
         } catch (error: unknown) {
             const err = error as { response?: { status?: number } };
             if (err?.response?.status === 404) {
-                throw new NotFoundException(`Word "${word}" not found`);
+                throw new WordNotFoundError(`Word "${word}" not found`);
             }
             throw error;
         }

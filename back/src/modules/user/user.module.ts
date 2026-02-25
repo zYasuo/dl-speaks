@@ -12,7 +12,8 @@ import { UserRepository } from "./adapters/outbound/user.repository";
     providers: [
         {
             provide: USER_MODULE_TOKENS.CREATE_USER_USE_CASE,
-            useClass: CreateUserUseCase
+            useFactory: (userRepository) => new CreateUserUseCase(userRepository),
+            inject: [USER_MODULE_TOKENS.USER_REPOSITORY],
         },
         {
             provide: USER_MODULE_TOKENS.USER_REPOSITORY,

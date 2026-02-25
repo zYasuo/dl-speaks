@@ -13,7 +13,11 @@ describe("AddToFavoriteUseCase", () => {
         jest.clearAllMocks();
         const module: TestingModule = await Test.createTestingModule({
             providers: [
-                AddToFavoriteUseCase,
+                {
+                    provide: AddToFavoriteUseCase,
+                    useFactory: (wordRepository) => new AddToFavoriteUseCase(wordRepository),
+                    inject: [DICTIONARY_MODULE_TOKENS.WORD_REPOSITORY],
+                },
                 {
                     provide: DICTIONARY_MODULE_TOKENS.WORD_REPOSITORY,
                     useValue: mockWordRepository,

@@ -1,9 +1,8 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { ConflictException } from "@nestjs/common";
 import { USER_MODULE_TOKENS } from "src/modules/user/constants/user.tokens.constants";
 import { AUTH_MODULE_TOKENS } from "../../constants/auth.tokens.constants";
 import { SignupUseCase } from "./signup.use-case";
-import { USER_ERRORS } from "src/commons/constants/errors/user-errors.constants";
+import { UserAlreadyExistsError } from "src/commons/domain/exceptions/user.exceptions";
 
 const mockUserRepository = {
     isUserExists: jest.fn(),
@@ -24,7 +23,16 @@ describe("SignupUseCase", () => {
         jest.clearAllMocks();
         const module: TestingModule = await Test.createTestingModule({
             providers: [
-                SignupUseCase,
+                {
+                    provide: SignupUseCase,
+                    useFactory: (userRepository, passwordHasher, createUserUseCase) =>
+                        new SignupUseCase(userRepository, passwordHasher, createUserUseCase),
+                    inject: [
+                        USER_MODULE_TOKENS.USER_REPOSITORY,
+                        AUTH_MODULE_TOKENS.PASSWORD_HASHER,
+                        USER_MODULE_TOKENS.CREATE_USER_USE_CASE,
+                    ],
+                },
                 {
                     provide: USER_MODULE_TOKENS.USER_REPOSITORY,
                     useValue: mockUserRepository,
@@ -60,13 +68,11 @@ describe("SignupUseCase", () => {
         expect(result).toEqual(created);
     });
 
-    it("should throw ConflictException when user already exists", async () => {
+    it("should throw UserAlreadyExistsError when user already exists", async () => {
         mockUserRepository.isUserExists.mockResolvedValue(true);
 
-        await expect(useCase.execute("a@b.com", "pass")).rejects.toThrow(ConflictException);
-        await expect(useCase.execute("a@b.com", "pass")).rejects.toThrow(
-            USER_ERRORS.USER_ALREADY_EXISTS
-        );
+        await expect(useCase.execute("a@b.com", "pass")).rejects.toThrow(UserAlreadyExistsError);
+        await expect(useCase.execute("a@b.com", "pass")).rejects.toThrow("User already exists");
         expect(mockPasswordHasher.hash).not.toHaveBeenCalled();
         expect(mockCreateUserUseCase.execute).not.toHaveBeenCalled();
     });

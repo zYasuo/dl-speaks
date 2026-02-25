@@ -1,7 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { NotFoundException } from "@nestjs/common";
 import { DICTIONARY_MODULE_TOKENS } from "../../constants/dictionary.tokens";
 import { GetWordUseCase } from "./get-word.use-case";
+import { WordNotFoundError } from "src/commons/domain/exceptions/word.exceptions";
 
 const mockDictionaryApiClient = {
     getWord: jest.fn(),
@@ -26,7 +26,27 @@ describe("GetWordUseCase", () => {
         jest.clearAllMocks();
         const module: TestingModule = await Test.createTestingModule({
             providers: [
-                GetWordUseCase,
+                {
+                    provide: GetWordUseCase,
+                    useFactory: (
+                        dictionaryClient,
+                        findWordByWordUseCase,
+                        createWordFromApiUseCase,
+                        addToRecentWordsUseCase
+                    ) =>
+                        new GetWordUseCase(
+                            dictionaryClient,
+                            findWordByWordUseCase,
+                            createWordFromApiUseCase,
+                            addToRecentWordsUseCase
+                        ),
+                    inject: [
+                        DICTIONARY_MODULE_TOKENS.DICTIONARY_CLIENT,
+                        DICTIONARY_MODULE_TOKENS.FIND_WORD_BY_WORD_USE_CASE,
+                        DICTIONARY_MODULE_TOKENS.CREATE_WORD_FROM_API_USE_CASE,
+                        DICTIONARY_MODULE_TOKENS.ADD_TO_RECENT_WORDS_USE_CASE,
+                    ],
+                },
                 {
                     provide: DICTIONARY_MODULE_TOKENS.DICTIONARY_CLIENT,
                     useValue: mockDictionaryApiClient,
@@ -79,11 +99,11 @@ describe("GetWordUseCase", () => {
         expect(result).toEqual(apiData);
     });
 
-    it("should throw NotFoundException when API returns 404", async () => {
+    it("should throw WordNotFoundError when API returns 404", async () => {
         const err = { response: { status: 404 } };
         mockDictionaryApiClient.getWord.mockRejectedValue(err);
 
-        await expect(useCase.execute("en", "xyz")).rejects.toThrow(NotFoundException);
+        await expect(useCase.execute("en", "xyz")).rejects.toThrow(WordNotFoundError);
         await expect(useCase.execute("en", "xyz")).rejects.toThrow('Word "xyz" not found');
     });
 

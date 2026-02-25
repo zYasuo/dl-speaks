@@ -14,7 +14,11 @@ describe("GetRecentWordsUseCase", () => {
         jest.clearAllMocks();
         const module: TestingModule = await Test.createTestingModule({
             providers: [
-                GetRecentWordsUseCase,
+                {
+                    provide: GetRecentWordsUseCase,
+                    useFactory: (cache) => new GetRecentWordsUseCase(cache),
+                    inject: [REDIS_MODULE_TOKENS.CACHE],
+                },
                 {
                     provide: REDIS_MODULE_TOKENS.CACHE,
                     useValue: mockCache,
