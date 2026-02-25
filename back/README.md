@@ -11,8 +11,19 @@ This backend is set up as a **hub**: one API that will host and serve multiple p
 - **Auth** — `POST /api/v1/auth/signin` and `POST /api/v1/auth/signup` (JWT, Argon2).
 - **Dictionary** — `GET /api/v1/dictionary/:language/:word`: fetches the word from an external API (e.g. Free Dictionary API), persists to Postgres, caches in Redis, and adds it to "recent words".
 - **Words** — `GET /api/v1/words/recent` (list of recently searched words) and `POST /api/v1/words/favorite` (add to favorites; requires JWT).
+- **Daily goals** — `GET /api/v1/daily-goals/today` (get or create today’s goal; JWT) and `PATCH /api/v1/daily-goals/items/:id/complete` (mark item done; JWT). A scheduled job (BullMQ + Redis) creates daily goals for all users every day at midnight (UTC).
 
-Stack: NestJS 11, Prisma (PostgreSQL), Redis (cache), JWT, class-validator/class-transformer, Axios for the dictionary API.
+Stack: NestJS 11, Prisma (PostgreSQL), Redis (cache + BullMQ), JWT, class-validator/class-transformer, Axios for the dictionary API.
+
+## Architecture
+
+The backend is organized in **hexagonal style** (ports & adapters):
+
+- **Domain** — use cases, entities, and ports (interfaces). No framework or DB here.
+- **Adapters inbound** — HTTP controllers, queue processor, scheduler (they call use cases).
+- **Adapters outbound** — repositories (Prisma), external APIs, Redis, clock (they implement ports).
+- **Database** — a single `PrismaClient` is provided by `DatabaseModule` via `IDatabaseService`; all repositories inject it and use `getClient()`.
+- **Errors** — a global exception filter (`GlobalHttpExceptionFilter`) normalizes HTTP and unexpected errors (e.g. 404, 500 with a generic message).
 
 ## Run in development
 

@@ -12,6 +12,7 @@ Personal project I built to study English at home. The idea is having a dictiona
 - **Dashboard** — Home (profile) and **Dictionary**.
 - **Dictionary / Words** — search field with suggestions from recent words. I search for a word, the API returns definitions, part of speech, examples, audio (when available) and lets me add to favorites.
 - **Recent words** — clickable badges with the last words I searched; click again and it loads the result.
+- **Daily goals (meta diária)** — daily goals and items (words to study); mark items complete via the API.
 
 Stack: Next.js 16 (App Router), React 19, TypeScript, Tailwind, Zustand, forms with react-hook-form + zod, UI with shadcn-style components.
 

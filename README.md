@@ -135,6 +135,6 @@ For day-to-day development, use each app’s scripts (`start:dev` in backend, `d
 
 ## 7. Per-app details
 
-- **[back/README.md](back/README.md)** — Backend: API (Nest, Prisma, Redis), endpoints, Docker, scripts.
+- **[back/README.md](back/README.md)** — Backend: API (Nest, Prisma, Redis, BullMQ), hexagonal architecture (ports & adapters), endpoints, Docker, scripts.
 - **[front/README.md](front/README.md)** — Front: Next.js app, screens, `BACKEND_URL` env, scripts.
 - **shared/** — Schemas and types only; see [shared/README.md](shared/README.md) if needed.
