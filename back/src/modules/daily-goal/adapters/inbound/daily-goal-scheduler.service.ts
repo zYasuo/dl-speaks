@@ -1,10 +1,7 @@
 import { Inject, Injectable, OnModuleInit } from "@nestjs/common";
-import { InjectQueue } from "@nestjs/bullmq";
-import { Queue } from "bullmq";
 import {
     DAILY_GOAL_CRON,
     DAILY_GOAL_JOB_BUILD,
-    DAILY_GOAL_QUEUE_NAME,
 } from "../../constants/daily-goal.constants";
 import { DAILY_GOAL_MODULE_TOKENS } from "../../constants/daily-goal-tokens.constants";
 import type { IDailyGoalQueue } from "./interfaces/daily-goal-queue.interface";
@@ -22,9 +19,11 @@ export class DailyGoalSchedulerService implements OnModuleInit {
             (j) => j.pattern === DAILY_GOAL_CRON && j.name === DAILY_GOAL_JOB_BUILD
         );
         if (!alreadyScheduled) {
-            await this.queue.add(DAILY_GOAL_JOB_BUILD, {}, {
-                repeat: { pattern: DAILY_GOAL_CRON },
-            });
+            await this.queue.add(
+                DAILY_GOAL_JOB_BUILD,
+                {},
+                { repeat: { pattern: DAILY_GOAL_CRON } }
+            );
         }
     }
 }
