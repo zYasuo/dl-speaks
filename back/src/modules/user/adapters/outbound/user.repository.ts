@@ -1,7 +1,7 @@
 import { ConflictException, Inject, Injectable } from "@nestjs/common";
 import { Prisma, PrismaClient } from "@prisma/client";
 import { DATABASE_MODULE_TOKENS } from "src/modules/db/constants/db-tokens.constants";
-import type { IDatabaseService } from "src/modules/db/services/interfaces/database-config-service.interface";
+import type { IDatabaseService } from "src/modules/db/domain/ports/database.port";
 import type { IUserRepository } from "../../domain/ports/user-repository,port";
 import { UserEntity } from "../../domain/entities/user.entity";
 import { TSignup } from "@shared/schemas/auth/signup.schema";

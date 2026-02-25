@@ -135,6 +135,18 @@ model DailyGoalItem {
   @@unique([daily_goal_id, word_id])
 }
 
+model Sentence {
+  id          Int      @id @default(autoincrement())
+  uuid        String   @unique @default(uuid())
+  external_id Int      @unique
+  text        String
+  lang        String
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  @@index([lang])
+}
+
 enum Role {
   ADMIN
   USER

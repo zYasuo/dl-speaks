@@ -1,21 +1,20 @@
 import { Inject, Injectable, NotFoundException } from "@nestjs/common";
-import { DICTIONARY_MODULE_TOKENS } from "../../constants/dictonary.tokens";
-import type { DictionaryApiClient } from "../../client/client.api";
-import type { FindWordByWordUseCase } from "../../modules/words/domain/use-cases/find-word-by-word.use-case";
-import type { CreateWordFromApiUseCase } from "../../modules/words/domain/use-cases/create-word-from-api.use-case";
-import type { AddToRecentWordsUseCase } from "../../modules/words/domain/use-cases/add-to-recent-words.use-case";
-import { WORDS_MODULE_TOKENS } from "../../modules/words/constants/words-tokens.constants";
+import { DICTIONARY_MODULE_TOKENS } from "../../constants/dictionary.tokens";
+import type { IDictionaryApiClient } from "../ports/dictionary-api.port";
+import type { FindWordByWordUseCase } from "./find-word-by-word.use-case";
+import type { CreateWordFromApiUseCase } from "./create-word-from-api.use-case";
+import type { AddToRecentWordsUseCase } from "./add-to-recent-words.use-case";
 
 @Injectable()
 export class GetWordUseCase {
     constructor(
         @Inject(DICTIONARY_MODULE_TOKENS.DICTIONARY_CLIENT)
-        private readonly dictionaryApiClient: DictionaryApiClient,
-        @Inject(WORDS_MODULE_TOKENS.FIND_WORD_BY_WORD_USE_CASE)
+        private readonly dictionaryApiClient: IDictionaryApiClient,
+        @Inject(DICTIONARY_MODULE_TOKENS.FIND_WORD_BY_WORD_USE_CASE)
         private readonly findWordByWordUseCase: FindWordByWordUseCase,
-        @Inject(WORDS_MODULE_TOKENS.CREATE_WORD_FROM_API_USE_CASE)
+        @Inject(DICTIONARY_MODULE_TOKENS.CREATE_WORD_FROM_API_USE_CASE)
         private readonly createWordFromApiUseCase: CreateWordFromApiUseCase,
-        @Inject(WORDS_MODULE_TOKENS.ADD_TO_RECENT_WORDS_USE_CASE)
+        @Inject(DICTIONARY_MODULE_TOKENS.ADD_TO_RECENT_WORDS_USE_CASE)
         private readonly addToRecentWordsUseCase: AddToRecentWordsUseCase
     ) {}
 

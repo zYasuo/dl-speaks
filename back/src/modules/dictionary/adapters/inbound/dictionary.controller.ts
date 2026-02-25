@@ -1,6 +1,6 @@
 import { Controller, Get, Inject, Param } from "@nestjs/common";
 import type { GetWordUseCase } from "../../domain/use-cases/get-word.use-case";
-import { DICTIONARY_MODULE_TOKENS } from "../../constants/dictonary.tokens";
+import { DICTIONARY_MODULE_TOKENS } from "../../constants/dictionary.tokens";
 
 @Controller("dictionary")
 export class DictionaryController {

@@ -1,3 +1,21 @@
+# Testing (back)
+
+## Commands
+
+| Command | Description |
+|--------|-------------|
+| `npm run test:unit` | Run **unit tests** (`*.spec.ts` in `src/`). No app or infra (DB/Redis/Bull). |
+| `npm test` | Alias for unit tests (same as `test:unit`). |
+| `npm run test:e2e` | Run **E2E tests** (`*.e2e-spec.ts` in `test/`). Boots Nest app and uses real DB. |
+| `npm run test:watch` | Unit tests in watch mode. |
+| `npm run test:cov` | Unit tests with coverage report. |
+
+**Unit:** one `*.spec.ts` file next to the code (e.g. `get-word.use-case.ts` + `get-word.use-case.spec.ts`). Mocks with `jest.fn()`; no server.
+
+**E2E:** one `*.e2e-spec.ts` in `test/<domain>/`. Uses `supertest` against the real API; requires `DATABASE_URL` (and Redis when the module uses it).
+
+---
+
 # End-to-End (E2E) Tests — Design Guidelines
 
 ## Where tests live
@@ -12,7 +30,8 @@ back/
     helpers/               # Shared mocks and modules for e2e
       auth-e2e.module.ts
       dictionary-e2e.module.ts
-      dictionary-api-mock.ts   # Mock for GET /dictionary (no real API)
+      dictionary-api-mock.ts   # Mock for dictionary API, Tatoeba client
+      sentence-queue.e2e-mock.ts  # Mock queue for sentence sync (no Bull/Redis)
       redis-e2e-mock.module.ts
     auth/
       auth.e2e-spec.ts     # Auth: signup, signin (/auth)
@@ -40,6 +59,7 @@ back/
 - **Auth/User e2e:** use `AuthE2eModule` (`test/helpers/auth-e2e.module.ts`), which only imports Config + Database + Auth. No Redis or BullMQ required.
 - **Database:** use a real test database. Set `DATABASE_URL` to a test Postgres (e.g. CI or Docker).
 - **Full API e2e:** use `ApiV1Module` and, to avoid Redis, use `overrideModule(RedisModule).useModule(RedisE2eMockModule)`.
+- **Dictionary/words e2e:** override `DICTIONARY_CLIENT`, `TATOEBA_CLIENT`, `getQueueToken(SENTENCE_QUEUE_NAME)` (mock queue), `SentenceProcessor` and `SentenceScheduler` (no-op) so the suite does not call external APIs nor run Bull jobs. Use mocks from `helpers/dictionary-api-mock.ts` and `helpers/sentence-queue.e2e-mock.ts`.
 
 This keeps behavior realistic while only bringing up the infra needed per suite.
 
@@ -103,6 +123,8 @@ cd back
 npm run test:e2e
 ```
 
+(See **Commands** at the top of this README for `test:unit` and others.)
+
 **Requirements:**
 
 - **DATABASE_URL** pointing to a running Postgres (dev or test).
@@ -112,11 +134,12 @@ npm run test:e2e
 
 | What | Where / How |
 |------|-------------|
-| File location | `back/test/<domain>/*.e2e-spec.ts` |
-| Jest config | `back/test/jest-e2e.json` |
+| **Unit** | `npm run test:unit` — `src/**/*.spec.ts` |
+| **E2E** | `npm run test:e2e` — `test/<domain>/*.e2e-spec.ts` |
+| E2E Jest config | `back/test/jest-e2e.json` |
 | App module | `AuthE2eModule` for auth-only; `ApiV1Module` for full API |
 | External infra | Redis mock in `helpers/` when the flow does not need Redis |
-| Database | Real, via `DATABASE_URL` |
+| Database | Real, via `DATABASE_URL` (E2E only) |
 | HTTP client | `supertest` on `app.getHttpServer()` |
 | Bootstrap | Same global prefix and exception filter as `main.ts` |
 

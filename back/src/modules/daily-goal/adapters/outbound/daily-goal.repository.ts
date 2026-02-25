@@ -1,7 +1,7 @@
 import { Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { DATABASE_MODULE_TOKENS } from "src/modules/db/constants/db-tokens.constants";
 import { DAILY_GOAL_ERRORS } from "src/commons/constants/errors/daily-goal-errors.constants";
-import type { IDatabaseService } from "src/modules/db/services/interfaces/database-config-service.interface";
+import type { IDatabaseService } from "src/modules/db/domain/ports/database.port";
 import type { IDailyGoalRepository } from "../../domain/ports/daily-goal-repository.port";
 import type { TDailyGoalTodayResponse } from "@shared/schemas/daily-goal/daily-goal-today-response.schema";
 import { ITEMS_PER_DAY, DAYS_TO_EXCLUDE_RECENT } from "../../constants/daily-goal.constants";

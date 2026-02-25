@@ -7,7 +7,7 @@ import { UserModule } from "../user/user.module";
 import { DAILY_GOAL_QUEUE_NAME } from "./constants/daily-goal.constants";
 import { DAILY_GOAL_MODULE_TOKENS } from "./constants/daily-goal-tokens.constants";
 import { DailyGoalController } from "./adapters/inbound/daily-goal.controller";
-import { DailyGoalSchedulerService } from "./adapters/inbound/daily-goal-scheduler.service";
+import { DailyGoalScheduler } from "./adapters/inbound/daily-goal-scheduler";
 import { DailyGoalProcessor } from "./adapters/inbound/daily-goal.processor";
 import { DailyGoalRepository } from "./adapters/outbound/daily-goal.repository";
 import { ClockAdapter } from "./adapters/outbound/clock.adapter";
@@ -60,7 +60,7 @@ import { EnsureTodayGoalsForAllUsersUseCase } from "./domain/use-cases/ensure-to
             useClass: EnsureTodayGoalsForAllUsersUseCase,
         },
         DailyGoalProcessor,
-        DailyGoalSchedulerService,
+        DailyGoalScheduler,
     ],
 })
 export class DailyGoalModule {}
