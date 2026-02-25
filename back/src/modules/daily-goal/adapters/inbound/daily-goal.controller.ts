@@ -10,8 +10,7 @@ import {
 import { JwtGuard } from "src/modules/auth/jwt/guards/jwt-guard";
 import { ZodValidationPipe } from "src/commons/pipes/zod-validation.pipe";
 import { ZodResponse } from "src/commons/decorators/zod-response.decorator";
-import { DAILY_GOAL_MODULE_TOKENS } from "../constants/daily-goal-tokens.constants";
-import type { IDailyGoalService } from "../services/interfaces/daily-goal-service.interface";
+import { DAILY_GOAL_MODULE_TOKENS } from "../../constants/daily-goal-tokens.constants";
 import { SItemIdParam, type TItemIdParam } from "@shared/schemas/daily-goal/item-id.param";
 import {
     SDailyGoalTodayResponse,
@@ -21,13 +20,17 @@ import {
     SMarkCompleteResponse,
     type TMarkCompleteResponse,
 } from "@shared/schemas/daily-goal/mark-complete-response.schema";
+import { GetOrCreateTodayGoalUseCase } from "../../domain/use-cases/get-or-create-today-goal.use-case";
+import { MarkItemCompleteUseCase } from "../../domain/use-cases/mark-item-complete.use-case";
 
 @Controller("daily-goals")
 @UseGuards(JwtGuard)
 export class DailyGoalController {
     constructor(
-        @Inject(DAILY_GOAL_MODULE_TOKENS.DAILY_GOAL_SERVICE)
-        private readonly dailyGoalService: IDailyGoalService
+        @Inject(DAILY_GOAL_MODULE_TOKENS.GET_OR_CREATE_TODAY_GOAL_USE_CASE)
+        private readonly getOrCreateTodayGoal: GetOrCreateTodayGoalUseCase,
+        @Inject(DAILY_GOAL_MODULE_TOKENS.MARK_ITEM_COMPLETE_USE_CASE)
+        private readonly markItemComplete: MarkItemCompleteUseCase
     ) {}
 
     @Get("today")
@@ -35,7 +38,7 @@ export class DailyGoalController {
     async getToday(
         @Req() req: { user: { sub: string } }
     ): Promise<TDailyGoalTodayResponse> {
-        return this.dailyGoalService.getOrCreateTodayGoalByUserUuid(req.user.sub);
+        return this.getOrCreateTodayGoal.execute(req.user.sub);
     }
 
     @Patch("items/:id/complete")
@@ -44,7 +47,7 @@ export class DailyGoalController {
         @Param("id", new ZodValidationPipe(SItemIdParam)) itemId: TItemIdParam,
         @Req() req: { user: { sub: string } }
     ): Promise<TMarkCompleteResponse> {
-        await this.dailyGoalService.markItemComplete(itemId, req.user.sub);
+        await this.markItemComplete.execute(itemId, req.user.sub);
         return { ok: true };
     }
 }
