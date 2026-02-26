@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     description: "Dictionary"
 };
 
-export default function Page() {
+export default function DictionaryWordsPage() {
     async function handleGetWords(form_data: TGetWords) {
         "use server";
         return getWords(form_data);
