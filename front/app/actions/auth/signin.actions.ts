@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import { API_ROUTES, AUTH_TOKEN_COOKIE_NAME } from "@/app/config/api/api-config";
 import { getApiRequestInit } from "@/app/config/api/api-client";
 import type { IActionResponse } from "@/app/types/api/api.types";
-import type { TSigninResponse } from "@shared/schemas/auth/signin.schema";
+import type { TSignin, TSigninResponse } from "@shared/schemas/auth/signin.schema";
 import type { TUserPublic } from "@shared/schemas/user/user.schema";
 
 const emptyUser: TUserPublic = {
@@ -14,13 +14,11 @@ const emptyUser: TUserPublic = {
     created_at: new Date(0),
 };
 
-export async function signin(formData: FormData): Promise<IActionResponse<TSigninResponse>> {
+export async function signin(form_data: TSignin): Promise<IActionResponse<TSigninResponse>> {
     try {
-        const email = formData.get("email");
-        const password = formData.get("password");
         const route = API_ROUTES.AUTH.SIGNIN;
         const { url, init } = getApiRequestInit(route, {
-            body: { email, password },
+            body: form_data,
         });
 
         const response = await fetch(url, init);

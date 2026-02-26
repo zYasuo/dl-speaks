@@ -3,7 +3,8 @@ import * as React from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
-import { SSignin, TSignin } from "@shared/schemas/auth/signin.schema";
+import { SSignin, TSignin, TSigninResponse } from "@shared/schemas/auth/signin.schema";
+import type { IActionResponse } from "@/app/types/api/api.types";
 import { useRouter } from "next/navigation";
 
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
@@ -11,11 +12,15 @@ import { EyeIcon, EyeOffIcon, XIcon } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { signin } from "@/app/actions/auth/signin.actions";
 import { toast } from "sonner";
 import { Spinner } from "@/components/ui/spinner";
 
-const FormSignin = () => {
+
+interface IFormSigninProps {
+    onSignin: (form_data: TSignin) => Promise<IActionResponse<TSigninResponse>>;
+}
+
+const FormSignin = ({ onSignin }: IFormSigninProps) => {
     const [isSigningIn, startSigningIn] = React.useTransition();
     const [showPassword, setShowPassword] = React.useState(false);
     const router = useRouter();
@@ -28,35 +33,17 @@ const FormSignin = () => {
         }
     });
 
-    const onSubmit = async (form_data: TSignin) => {
+    async function handleSubmit(form_data: TSignin) {
         startSigningIn(async () => {
-            const formData = new FormData();
-
-            formData.append("email", form_data.email);
-            formData.append("password", form_data.password);
-
-            const { success, message, error, data } = await signin(formData);
-            if (success) {
-                toast.success(message);
-                if (typeof window !== "undefined" && data.access_token) {
-                    window.localStorage.setItem("access_token", data.access_token);
-                }
-                setTimeout(() => {
-                    router.push("/dashboard/home");
-                }, 1000);
+            const result = await onSignin(form_data);
+            if (result.success) {
+                toast.success(result.message);
+                router.push("/");
             } else {
-                toast.error(error || "Sign in failed", {
-                    description: error,
-                    action: {
-                        label: "Retry",
-                        onClick: () => {
-                            form.reset();
-                        }
-                    }
-                });
+                toast.error(result.error ?? result.message);
             }
         });
-    };
+    }
 
     return (
         <Card className="w-full bg-muted ring-0">
@@ -65,7 +52,7 @@ const FormSignin = () => {
                 <CardDescription>Sign in to your account</CardDescription>
             </CardHeader>
             <CardContent>
-                <form id="form-rhf-demo" onSubmit={form.handleSubmit(onSubmit)}>
+                <form id="form-rhf-demo" onSubmit={form.handleSubmit(handleSubmit)}>
                     <div className="space-y-8">
                         <FieldGroup>
                             <Controller
