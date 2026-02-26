@@ -3,21 +3,23 @@
 import { useEffect, useState, useActionState, startTransition } from "react";
 import { Badge } from "@/components/ui/badge";
 import { getRecentWords } from "@/app/actions/dictionary/recents-words.actions";
-import { getWords } from "@/app/actions/dictionary/get-words.actions";
+import { TGetWordsState } from "@/app/actions/dictionary/get-words.actions";
+import { TGetWords } from "@shared/schemas/dictionary/get-words.schema";
 import { normalizeWords } from "@/app/utils/normalize-words.utils";
 import { useDictionaryStore } from "@/lib/stores/dictionary.store";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { LANGUAGE } from "../../constants/language.constants";
 
+interface IRecentWordsBadgeProps {
+    onGetWords: (form_data: TGetWords) => Promise<TGetWordsState>;
+}
 
-const RecentWordsBadge = () => {
+const RecentWordsBadge = ({ onGetWords }: IRecentWordsBadgeProps) => {
     const setResult = useDictionaryStore((s) => s.setResult);
     const [loadingWord, setLoadingWord] = useState<string | null>(null);
 
     const [recentState, loadRecentsAction] = useActionState(getRecentWords, { items: [] });
-    const [getWordsState, getWordsFormAction] = useActionState(getWords, null);
 
     useEffect(() => {
         startTransition(() => {
@@ -25,27 +27,21 @@ const RecentWordsBadge = () => {
         });
     }, [loadRecentsAction]);
 
-    useEffect(() => {
-        if (getWordsState === null) return;
-        setLoadingWord(null);
-        if (getWordsState.success) {
-            toast.success(getWordsState.message);
-            setResult(normalizeWords(getWordsState.data));
-        } else {
-            toast.error(getWordsState.error);
-            setResult(null);
-        }
-    }, [getWordsState, setResult]);
-
-    const handleWordClick = (word: string) => {
+    async function handleWordClick(word: string) {
         setLoadingWord(word);
-        const formData = new FormData();
-        formData.append("language", LANGUAGE.en);
-        formData.append("word", word);
-        startTransition(() => {
-            getWordsFormAction(formData);
-        });
-    };
+        try {
+            const result = await onGetWords({ language: "en", word });
+            if (result.success) {
+                toast.success(result.message);
+                setResult(normalizeWords(result.data));
+            } else {
+                toast.error(result.error ?? result.message);
+                setResult(null);
+            }
+        } finally {
+            setLoadingWord(null);
+        }
+    }
 
     const words = recentState.items.map((item) => item.label);
 

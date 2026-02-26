@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import { Volume2, Quote } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import type { TWordEntry, TMeaning, TDefinition } from "@shared/schemas/dictionary/words.schema";
+import type { TWordEntry, TMeaning, TDefinition, TPhonetic } from "@shared/schemas/dictionary/words.schema";
 import { cn } from "@/lib/utils";
 
 function getAudioUrl(audio?: string): string | null {
@@ -43,7 +43,7 @@ function MeaningBlock({ meaning }: { meaning: TMeaning }) {
                 {meaning.partOfSpeech}
             </Badge>
             <ul className="space-y-0 list-none min-w-0">
-                {meaning.definitions.map((def, i) => (
+                {meaning.definitions.map((def: TDefinition, i: number) => (
                     <DefinitionItem key={i} definition={def} index={i} />
                 ))}
             </ul>
@@ -55,9 +55,9 @@ export default function WordResult({ entry }: { entry: TWordEntry }) {
     const audioRef = useRef<HTMLAudioElement>(null);
     const [playing, setPlaying] = useState(false);
 
-    const audioSrc = entry.phonetics?.find((p) => p.audio)?.audio;
+    const audioSrc = entry.phonetics?.find((p: TPhonetic) => p.audio)?.audio;
     const audioUrl = getAudioUrl(audioSrc);
-    const phoneticText = entry.phonetic ?? entry.phonetics?.find((p) => p.text)?.text;
+    const phoneticText = entry.phonetic ?? entry.phonetics?.find((p: TPhonetic) => p.text)?.text;
 
     const playAudio = () => {
         if (!audioUrl) return;
@@ -116,7 +116,7 @@ export default function WordResult({ entry }: { entry: TWordEntry }) {
                 )}
             </CardHeader>
             <CardContent className="space-y-6 pt-0 min-w-0 overflow-hidden">
-                {entry.meanings.map((meaning, i) => (
+                {entry.meanings.map((meaning: TMeaning, i: number) => (
                     <MeaningBlock key={i} meaning={meaning} />
                 ))}
             </CardContent>

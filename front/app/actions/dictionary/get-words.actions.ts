@@ -3,17 +3,14 @@
 import { API_ROUTES } from "@/app/config/api/api-config";
 import { getApiRequestInit } from "@/app/config/api/api-client";
 import type { IActionResponse } from "@/app/types/api/api.types";
+import type { TGetWords } from "@shared/schemas/dictionary/get-words.schema";
 import type { TWords } from "@shared/schemas/dictionary/words.schema";
 
-export type TGetWordsState = IActionResponse<TWords> | null;
+export type TGetWordsState = IActionResponse<TWords>;
 
-export async function getWords(
-    _prevState: TGetWordsState,
-    formData: FormData
-): Promise<TGetWordsState> {
+export async function getWords(form_data: TGetWords): Promise<TGetWordsState> {
     try {
-        const language = String(formData.get("language") ?? "en");
-        const word = String(formData.get("word") ?? "");
+        const { language, word } = form_data;
         const route = API_ROUTES.DICTIONARY.GET_WORDS;
         const { url, init } = getApiRequestInit(route, {
             pathParams: { language, word }

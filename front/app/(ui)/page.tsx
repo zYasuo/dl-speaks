@@ -10,9 +10,9 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-
     async function handleSignin(data: TSignin) {
-        return signin(data);
+        "use server";
+        return await signin(data);
     }
 
     return (

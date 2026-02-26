@@ -15,7 +15,6 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Spinner } from "@/components/ui/spinner";
 
-
 interface IFormSigninProps {
     onSignin: (form_data: TSignin) => Promise<IActionResponse<TSigninResponse>>;
 }
@@ -38,7 +37,7 @@ const FormSignin = ({ onSignin }: IFormSigninProps) => {
             const result = await onSignin(form_data);
             if (result.success) {
                 toast.success(result.message);
-                router.push("/");
+                router.push("/dashboard/dictionary/words");
             } else {
                 toast.error(result.error ?? result.message);
             }

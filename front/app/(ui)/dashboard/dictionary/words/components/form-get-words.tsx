@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useActionState, startTransition } from "react";
+import { useEffect, useActionState, startTransition, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { SearchIcon } from "lucide-react";
 import { SGetWords, TGetWords } from "@shared/schemas/dictionary/get-words.schema";
@@ -13,21 +13,25 @@ import {
     AutocompleteInput,
     AutocompleteItem,
     AutocompleteList,
-    AutocompletePopup,
+    AutocompletePopup
 } from "@/components/ui/autocomplete";
 import { InputGroup, InputGroupAddon, InputGroupButton } from "@/components/ui/input-group";
-import { getWords } from "@/app/actions/dictionary/get-words.actions";
 import { getRecentWords } from "@/app/actions/dictionary/recents-words.actions";
+import { TGetWordsState } from "@/app/actions/dictionary/get-words.actions";
 import { useDictionaryStore } from "@/lib/stores/dictionary.store";
 import { normalizeWords } from "@/app/utils/normalize-words.utils";
+import { Spinner } from "@/components/ui/spinner";
 
 type TAutocompleteItem = { label: string; value: string };
 
-const FormGetWords = () => {
-    const setResult = useDictionaryStore((s) => s.setResult);
+interface IFormGetWordsProps {
+    onGetWords: (form_data: TGetWords) => Promise<TGetWordsState>;
+}
 
+const FormGetWords = ({ onGetWords }: IFormGetWordsProps) => {
+    const setResult = useDictionaryStore((s) => s.setResult);
+    const [isPending, startTransition] = useTransition();
     const [recentState, loadRecentsAction] = useActionState(getRecentWords, { items: [] });
-    const [getWordsState, getWordsFormAction] = useActionState(getWords, null);
 
     const form = useForm<TGetWords>({
         resolver: zodResolver(SGetWords),
@@ -45,26 +49,19 @@ const FormGetWords = () => {
         });
     }, [loadRecentsAction]);
 
-    useEffect(() => {
-        if (getWordsState === null) return;
-        if (getWordsState.success) {
-            toast.success(getWordsState.message);
-            setResult(normalizeWords(getWordsState.data));
-            startTransition(() => loadRecentsAction());
-        } else {
-            toast.error(getWordsState.error);
-            setResult(null);
-        }
-    }, [getWordsState, setResult, loadRecentsAction]);
-
-    const onSubmit = (form_data: TGetWords) => {
-        const formData = new FormData();
-        formData.append("language", form_data.language);
-        formData.append("word", form_data.word.trim());
-        startTransition(() => {
-            getWordsFormAction(formData);
+    async function onSubmit(form_data: TGetWords) {
+        startTransition(async () => {
+            const result = await onGetWords(form_data);
+            if (result.success) {
+                toast.success(result.message);
+                setResult(normalizeWords(result.data));
+                startTransition(() => loadRecentsAction());
+            } else {
+                toast.error(result.error ?? result.message);
+                setResult(null);
+            }
         });
-    };
+    }
 
     return (
         <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
@@ -95,8 +92,8 @@ const FormGetWords = () => {
                     </Autocomplete>
                 </div>
                 <InputGroupAddon align="inline-end">
-                    <InputGroupButton type="submit" size="icon-sm" className="size-10" aria-label="Search">
-                        <SearchIcon className="size-5" />
+                    <InputGroupButton type="submit" size="icon-sm" className="size-10" aria-label="Search" disabled={isPending}>
+                        {isPending ? <Spinner className="size-5" /> : <SearchIcon className="size-5" />}
                     </InputGroupButton>
                 </InputGroupAddon>
             </InputGroup>
