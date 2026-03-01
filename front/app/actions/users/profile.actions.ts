@@ -24,7 +24,6 @@ export async function profile(): Promise<IActionResponse<TUser>> {
     const response = await fetch(url, init);
 
     if (!response.ok) {
-        const error = await response.json().catch(() => ({}));
         return {
             success: false,
             message: "Profile failed",

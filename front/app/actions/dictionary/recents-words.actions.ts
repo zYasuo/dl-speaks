@@ -17,7 +17,7 @@ export async function getRecentWords(
         const json = await response.json();
         const data: TRecentWords = Array.isArray(json) ? { words: json } : json;
         const items =
-            data?.words?.length ? data.words.map((w) => ({ label: w, value: w })) : [];
+            data?.words?.length ? data.words.map((w: string) => ({ label: w, value: w })) : [];
         return { items };
     } catch {
         return { items: [] };
